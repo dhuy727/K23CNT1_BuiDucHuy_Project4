@@ -168,6 +168,40 @@ CREATE TABLE G9_DanhGia (
     FOREIGN KEY (G9_MaNguoiDung) REFERENCES G9_NguoiDung(G9_MaNguoiDung)
 );
 
+CREATE TABLE G9_GiaVang (
+    G9_MaGiaVang INT IDENTITY PRIMARY KEY,
+    G9_LoaiVang NVARCHAR(50), -- VD: SJC, 18K, 24K
+    G9_GiaMua DECIMAL(18,2),
+    G9_GiaBan DECIMAL(18,2),
+    G9_NgayCapNhat DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE G9_TinTuc (
+    G9_MaTinTuc INT IDENTITY PRIMARY KEY,
+    G9_TieuDe NVARCHAR(255) NOT NULL,
+    G9_MoTaNgan NVARCHAR(500),
+    G9_NoiDung NVARCHAR(MAX),
+    G9_HinhAnh NVARCHAR(255),
+    G9_MaNguoiDang INT,
+    G9_NgayDang DATETIME DEFAULT GETDATE(),
+    G9_TrangThai NVARCHAR(30) DEFAULT N'Hiển thị',
+
+    FOREIGN KEY (G9_MaNguoiDang) REFERENCES G9_NguoiDung(G9_MaNguoiDung)
+);
+
+CREATE TABLE G9_DanhMucTinTuc (
+    G9_MaDanhMuc INT IDENTITY PRIMARY KEY,
+    G9_TenDanhMuc NVARCHAR(100)
+);
+
+ALTER TABLE G9_TinTuc
+ADD G9_MaDanhMuc INT;
+
+ALTER TABLE G9_TinTuc
+ADD CONSTRAINT FK_TinTuc_DanhMuc
+FOREIGN KEY (G9_MaDanhMuc)
+REFERENCES G9_DanhMucTinTuc(G9_MaDanhMuc);
+
 CREATE INDEX IX_G9_SanPham_Ten ON G9_SanPham(G9_TenSanPham);
 CREATE INDEX IX_G9_DonHang_User ON G9_DonHang(G9_MaNguoiDung);
 CREATE INDEX IX_G9_GioHang_User ON G9_GioHang(G9_MaNguoiDung);
@@ -285,3 +319,59 @@ VALUES
 (1, 2, 5, N'Sản phẩm rất đẹp'), 
 (2, 3, 4, N'Khá ổn trong tầm giá'), 
 (3, 4, 5, N'Rất hài lòng'); 
+
+INSERT INTO G9_GiaVang (G9_LoaiVang, G9_GiaMua, G9_GiaBan, G9_NgayCapNhat)
+VALUES
+(N'SJC', 78500000, 79500000, DATEADD(DAY, -2, GETDATE())),
+(N'SJC', 79000000, 80000000, DATEADD(DAY, -1, GETDATE())),
+(N'SJC', 79500000, 80500000, GETDATE()),
+
+(N'Vàng 24K', 75000000, 76000000, DATEADD(DAY, -2, GETDATE())),
+(N'Vàng 24K', 75500000, 76500000, DATEADD(DAY, -1, GETDATE())),
+(N'Vàng 24K', 76000000, 77000000, GETDATE()),
+
+(N'Vàng 18K', 55000000, 56000000, DATEADD(DAY, -2, GETDATE())),
+(N'Vàng 18K', 55500000, 56500000, DATEADD(DAY, -1, GETDATE())),
+(N'Vàng 18K', 56000000, 57000000, GETDATE());
+
+INSERT INTO G9_DanhMucTinTuc (G9_TenDanhMuc)
+VALUES
+(N'Tin thị trường vàng'),
+(N'Tin kinh tế'),
+(N'Khuyến mãi');
+
+INSERT INTO G9_TinTuc 
+(G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+VALUES
+(
+N'Giá vàng hôm nay tăng mạnh',
+N'Giá vàng SJC tăng gần 1 triệu đồng/lượng',
+N'Trong phiên giao dịch hôm nay, giá vàng SJC tiếp tục tăng mạnh do ảnh hưởng từ thị trường thế giới...',
+'vang1.jpg',
+1,
+1
+),
+(
+N'Xu hướng đầu tư vàng năm 2026',
+N'Vàng tiếp tục là kênh đầu tư an toàn',
+N'Các chuyên gia nhận định rằng vàng vẫn là lựa chọn hàng đầu trong bối cảnh kinh tế biến động...',
+'vang2.jpg',
+1,
+2
+),
+(
+N'Khuyến mãi giảm giá trang sức mùa hè',
+N'Giảm đến 20% cho các sản phẩm vàng',
+N'Nhằm kích cầu mua sắm, cửa hàng triển khai chương trình giảm giá lên đến 20%...',
+'km1.jpg',
+1,
+3
+),
+(
+N'Giá vàng thế giới biến động nhẹ',
+N'Ảnh hưởng từ FED khiến giá vàng dao động',
+N'Giá vàng thế giới có xu hướng điều chỉnh nhẹ do các chính sách tiền tệ từ Mỹ...',
+'vang3.jpg',
+1,
+1
+);
