@@ -1,0 +1,30 @@
+nnh:
+- auth_routes.py
+- login.html
+- login.js
+- Đăng nhập, phân quyền
+
+bdh:
+- product_routes.py
+- category_routes.py
+- order_routes.py
+- dashboard_routes.py
+- gold_routes.py
+- news_routes.py
+- API quản trị
+
+ptp:
+- index.html
+- products.html
+- product-detail.html
+- cart.html
+- product.js
+- cart.js
+
+vmc:
+- checkout.html
+- checkout.js
+- gold-price.html
+- news.html
+- gold.js
+- news.js

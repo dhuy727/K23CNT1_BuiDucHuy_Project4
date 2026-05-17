@@ -1,0 +1,302 @@
+===========================
+DỰ ÁN WEBSITE G9 TRANG SỨC
+===========================
+
+Công nghệ sử dụng:
+- Backend: Python FlaskAPI
+- Database: Microsoft SQL Server
+- Frontend: HTML5, CSS3, JavaScript, Bootstrap 5
+- API: Fetch / Axios
+- Thông báo: SweetAlert2
+- Dashboard: Chart.js
+- IDE: Visual Studio Code
+- Quản lý source: Git / GitHub
+
+
+=========================================================
+CẤU TRÚC THƯ MỤC DỰ ÁN WEBSITE BÁN TRANG SỨC G9
+=========================================================
+
+G9_Trangsuc/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+│
+├── database/
+│   │
+│   ├── __init__.py
+│   ├── db_config.py
+│   └── G9_TrangSucDB.sql
+│
+│
+├───────────────────────────────────────
+│  PHẦN 1 — BACKEND API
+├───────────────────────────────────────
+│
+├── nnh_auth_api/                 ← Thành viên: NNH
+│   │
+│   ├── __init__.py
+│   ├── auth_routes.py
+│   └── auth_service.py
+│
+│   Chức năng:
+│   - Đăng nhập
+│   - Đăng ký
+│   - Quên mật khẩu
+│   - Đổi mật khẩu
+│   - Phân quyền
+│   - Thông tin cá nhân
+│
+│
+├── bdh_admin_api/                ← Thành viên: BDH
+│   │
+│   ├── __init__.py
+│   │
+│   ├── product_routes.py
+│   ├── category_routes.py
+│   ├── order_routes.py
+│   ├── user_routes.py
+│   ├── review_routes.py
+│   ├── gold_routes.py
+│   ├── news_routes.py
+│   └── dashboard_routes.py
+│
+│   Chức năng:
+│   - CRUD sản phẩm
+│   - CRUD danh mục
+│   - CRUD đơn hàng
+│   - CRUD người dùng
+│   - CRUD tin tức
+│   - CRUD giá vàng
+│   - Quản lý đánh giá
+│   - Dashboard thống kê
+│
+│
+├───────────────────────────────────────
+│  PHẦN 2 — FRONTEND CLIENT
+├───────────────────────────────────────
+│
+├── frontend/
+│   │
+│   ├────────────────────────────
+│   │  TRANG KHÁCH HÀNG
+│   ├────────────────────────────
+│   │
+│   ├── index.html                ← Thành viên: PTP
+│   ├── login.html                ← Thành viên: NNH
+│   ├── register.html             ← Thành viên: NNH
+│   ├── forgot-password.html      ← Thành viên: NNH
+│   │
+│   ├── products.html             ← Thành viên: PTP
+│   ├── product-detail.html       ← Thành viên: PTP
+│   ├── cart.html                 ← Thành viên: PTP
+│   │
+│   ├── checkout.html             ← Thành viên: VMC
+│   ├── orders.html               ← Thành viên: VMC
+│   ├── order-detail.html         ← Thành viên: VMC
+│   │
+│   ├── gold-price.html           ← Thành viên: VMC
+│   ├── news.html                 ← Thành viên: VMC
+│   ├── news-detail.html          ← Thành viên: VMC
+│   │
+│   ├── profile.html              ← Thành viên: NNH
+│
+│
+│   ├────────────────────────────
+│   │  TRANG ADMIN
+│   ├────────────────────────────
+│   │
+│   ├── admin/
+│   │   │
+│   │   ├── dashboard.html
+│   │   ├── products.html
+│   │   ├── product-create.html
+│   │   ├── product-edit.html
+│   │   │
+│   │   ├── categories.html
+│   │   │
+│   │   ├── orders.html
+│   │   ├── order-detail.html
+│   │   │
+│   │   ├── users.html
+│   │   │
+│   │   ├── gold.html
+│   │   │
+│   │   ├── news.html
+│   │   ├── news-create.html
+│   │   └── news-edit.html
+│
+│
+│   ├────────────────────────────
+│   │  ASSETS
+│   ├────────────────────────────
+│   │
+│   ├── assets/
+│   │   │
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   │
+│   │   ├── js/
+│   │   │   │
+│   │   │   ├── api.js
+│   │   │   │
+│   │   │   ├── auth.js
+│   │   │   ├── login.js
+│   │   │   ├── register.js
+│   │   │   ├── forgot-password.js
+│   │   │   │
+│   │   │   ├── product.js
+│   │   │   ├── product-detail.js
+│   │   │   ├── cart.js
+│   │   │   │
+│   │   │   ├── checkout.js
+│   │   │   ├── order.js
+│   │   │   │
+│   │   │   ├── gold.js
+│   │   │   ├── news.js
+│   │   │   │
+│   │   │   ├── profile.js
+│   │   │   ├── review.js
+│   │   │   └── dashboard.js
+│   │   │
+│   │   └── img/
+│   │
+│   └── uploads/
+│
+│
+└───────────────────────────────────────
+   GITHUB & QUẢN LÝ SOURCE
+───────────────────────────────────────
+
+GitHub:
+- Push source code
+- Quản lý commit
+- Quản lý branch
+- Chia module theo thành viên
+
+
+=========================================================
+PHÂN CÔNG THÀNH VIÊN
+=========================================================
+
+1. NNH — Xác thực & Tài khoản
+--------------------------------
+Backend:
+- auth_routes.py
+- auth_service.py
+
+Frontend:
+- login.html
+- register.html
+- forgot-password.html
+- profile.html
+
+Chức năng:
+- Đăng nhập
+- Đăng ký
+- Quên mật khẩu
+- Đổi mật khẩu
+- Logout
+- Phân quyền
+- Thông tin người dùng
+
+
+2. BDH — Backend API & Dashboard
+--------------------------------
+Backend:
+- product_routes.py
+- category_routes.py
+- order_routes.py
+- dashboard_routes.py
+- news_routes.py
+- gold_routes.py
+- review_routes.py
+- user_routes.py
+
+Chức năng:
+- CRUD sản phẩm
+- CRUD danh mục
+- CRUD đơn hàng
+- CRUD người dùng
+- Dashboard thống kê
+- API tin tức
+- API giá vàng
+- API đánh giá
+
+
+3. PTP — Frontend khách hàng
+--------------------------------
+Frontend:
+- index.html
+- products.html
+- product-detail.html
+- cart.html
+
+JS:
+- product.js
+- product-detail.js
+- cart.js
+
+Chức năng:
+- Trang chủ
+- Hiển thị sản phẩm
+- Tìm kiếm sản phẩm
+- Chi tiết sản phẩm
+- Giỏ hàng
+
+
+4. VMC — Thanh toán & Tin tức
+--------------------------------
+Frontend:
+- checkout.html
+- orders.html
+- order-detail.html
+- gold-price.html
+- news.html
+- news-detail.html
+
+JS:
+- checkout.js
+- order.js
+- gold.js
+- news.js
+
+Chức năng:
+- Thanh toán
+- Đặt hàng
+- Xem đơn hàng
+- Giá vàng
+- Tin tức
+- Đánh giá sản phẩm
+
+
+=========================================================
+CHỨC NĂNG WEBSITE HOÀN CHỈNH
+=========================================================
+
+KHÁCH HÀNG:
+- Đăng ký
+- Đăng nhập
+- Quên mật khẩu
+- Xem sản phẩm
+- Tìm kiếm sản phẩm
+- Xem chi tiết sản phẩm
+- Thêm giỏ hàng
+- Thanh toán
+- Theo dõi đơn hàng
+- Đánh giá sản phẩm
+- Xem giá vàng
+- Xem tin tức
+
+
+ADMIN:
+- Dashboard thống kê
+- CRUD sản phẩm
+- CRUD danh mục
+- CRUD đơn hàng
+- CRUD người dùng
+- CRUD tin tức
+- CRUD giá vàng
+- Quản lý đánh giá
+- Quản lý thanh toán
