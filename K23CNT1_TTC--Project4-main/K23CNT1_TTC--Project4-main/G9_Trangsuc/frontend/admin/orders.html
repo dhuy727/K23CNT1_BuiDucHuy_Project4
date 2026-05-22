@@ -9,39 +9,53 @@
 
 <body>
 
-<div class="admin-content">
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="dashboard.html">Admin G9 Trang Sức</a>
+    </div>
+</nav>
 
-    <h3 class="mb-4">Quản lý đơn hàng</h3>
+<div class="container-fluid">
+    <div class="row">
 
-    <div class="card admin-card">
-        <div class="card-body">
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <h5>Quản trị</h5>
+            <a href="dashboard.html" class="btn btn-outline-dark w-100 mb-2">Dashboard</a>
+            <a href="products.html" class="btn btn-outline-dark w-100 mb-2">Sản phẩm</a>
+            <a href="categories.html" class="btn btn-outline-dark w-100 mb-2">Danh mục</a>
+            <a href="orders.html" class="btn btn-dark w-100 mb-2">Đơn hàng</a>
+            <a href="users.html" class="btn btn-outline-dark w-100 mb-2">Người dùng</a>
+        </div>
 
-            <table class="table table-bordered table-hover">
-                <thead>
+        <div class="col-md-10 p-4">
+            <h2>Quản lý đơn hàng</h2>
+
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
                     <tr>
-                        <th>Mã đơn</th>
+                        <th>ID</th>
                         <th>Khách hàng</th>
+                        <th>Người nhận</th>
+                        <th>SĐT</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>
                         <th>Ngày đặt</th>
-                        <th>Cập nhật</th>
                     </tr>
                 </thead>
 
-                <tbody id="admin-order-body"></tbody>
+                <tbody id="orderTable">
+                    <tr>
+                        <td colspan="7">Đang tải đơn hàng...</td>
+                    </tr>
+                </tbody>
             </table>
 
         </div>
     </div>
-
 </div>
 
-<script src="../assets/js/api.js"></script>
-<script src="../assets/js/admin-layout.js"></script>
-<script>
-    renderAdminLayout("orders");
-</script>
-<script src="../assets/js/admin-orders.js"></script>
+<script src="../assets/js/shared/config.js"></script>
+<script src="../assets/js/admin/orders.js"></script>
 
 </body>
 </html>

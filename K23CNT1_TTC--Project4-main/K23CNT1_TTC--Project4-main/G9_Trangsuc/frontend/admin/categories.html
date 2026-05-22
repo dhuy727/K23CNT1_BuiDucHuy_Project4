@@ -3,52 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý danh mục</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
 
-<div class="admin-content">
-
-    <h3 class="mb-4">Quản lý danh mục</h3>
-
-    <div class="card admin-card mb-4">
-        <div class="card-body">
-
-            <h5>Thêm / Cập nhật danh mục</h5>
-
-            <input type="hidden" id="categoryId">
-
-            <input id="name" class="form-control mb-3" placeholder="Tên danh mục">
-            <input id="description" class="form-control mb-3" placeholder="Mô tả">
-            <input id="parentId" type="number" class="form-control mb-3" placeholder="Mã danh mục cha, bỏ trống nếu là danh mục cha">
-
-            <select id="status" class="form-control mb-3">
-                <option value="Hoạt động">Hoạt động</option>
-                <option value="Ẩn">Ẩn</option>
-            </select>
-
-            <button onclick="saveCategory()" class="btn btn-success">
-                Lưu danh mục
-            </button>
-
-            <button onclick="resetForm()" class="btn btn-secondary">
-                Làm mới
-            </button>
-
-        </div>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="dashboard.html">Admin G9 Trang Sức</a>
+        <button onclick="logout()" class="btn btn-danger btn-sm">Đăng xuất</button>
     </div>
+</nav>
 
-    <div class="card admin-card">
-        <div class="card-body">
+<div class="container-fluid">
+    <div class="row">
 
-            <table class="table table-bordered table-hover">
-                <thead>
+        <div class="col-md-2 bg-light min-vh-100 p-3">
+            <h5>Quản trị</h5>
+            <a href="dashboard.html" class="btn btn-outline-dark w-100 mb-2">Dashboard</a>
+            <a href="products.html" class="btn btn-outline-dark w-100 mb-2">Sản phẩm</a>
+            <a href="categories.html" class="btn btn-dark w-100 mb-2">Danh mục</a>
+            <a href="orders.html" class="btn btn-outline-dark w-100 mb-2">Đơn hàng</a>
+            <a href="users.html" class="btn btn-outline-dark w-100 mb-2">Người dùng</a>
+            <a href="news.html" class="btn btn-outline-dark w-100 mb-2">Tin tức</a>
+            <a href="gold-price.html" class="btn btn-outline-dark w-100 mb-2">Giá vàng</a>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <h2>Quản lý danh mục</h2>
+
+            <div class="card p-3 mb-4">
+                <h5 id="formTitle">Thêm danh mục</h5>
+
+                <form id="categoryForm">
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+                            <label>Tên danh mục</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label>Danh mục cha</label>
+                            <select id="parentId" class="form-select"></select>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label>Trạng thái</label>
+                            <select id="status" class="form-select">
+                                <option value="Hoạt động">Hoạt động</option>
+                                <option value="Ẩn">Ẩn</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Mô tả</label>
+                            <textarea id="description" class="form-control"></textarea>
+                        </div>
+
+                    </div>
+
+                    <button id="submitBtn" class="btn btn-warning">Thêm danh mục</button>
+                    <button type="button" onclick="resetCategoryForm()" class="btn btn-secondary">Làm mới</button>
+                </form>
+            </div>
+
+            <table class="table table-bordered align-middle">
+                <thead class="table-dark">
                     <tr>
-                        <th>Mã</th>
-                        <th>Tên danh mục</th>
+                        <th>ID</th>
+                        <th>Tên</th>
                         <th>Mô tả</th>
                         <th>Danh mục cha</th>
                         <th>Trạng thái</th>
@@ -56,20 +80,19 @@
                     </tr>
                 </thead>
 
-                <tbody id="category-body"></tbody>
+                <tbody id="categoryTable">
+                    <tr>
+                        <td colspan="6">Đang tải...</td>
+                    </tr>
+                </tbody>
             </table>
-
         </div>
-    </div>
 
+    </div>
 </div>
 
-<script src="../assets/js/api.js"></script>
-<script src="../assets/js/admin-layout.js"></script>
-<script>
-    renderAdminLayout("categories");
-</script>
-<script src="../assets/js/admin-categories.js"></script>
+<script src="../assets/js/shared/config.js"></script>
+<script src="../assets/js/admin/categories.js"></script>
 
 </body>
 </html>

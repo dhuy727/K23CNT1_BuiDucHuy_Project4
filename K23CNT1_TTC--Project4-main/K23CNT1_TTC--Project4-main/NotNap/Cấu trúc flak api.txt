@@ -1,0 +1,190 @@
+G9_Trangsuc/
+│
+├── backend/
+│   ├── app.py
+│   ├── config.py
+│   ├── requirements.txt
+│   ├── .env
+│   ├── README.md
+│   │
+│   ├── database/
+│   │   ├── db.py
+│   │   ├── init.sql
+│   │   ├── seed.sql
+│   │   └── backup.sql
+│   │
+│   ├── routes/
+│   │   ├── auth_routes.py
+│   │   ├── product_routes.py
+│   │   ├── category_routes.py
+│   │   ├── order_routes.py
+│   │   ├── cart_routes.py
+│   │   ├── checkout_routes.py
+│   │   ├── payment_routes.py
+│   │   ├── news_routes.py
+│   │   ├── gold_routes.py
+│   │   ├── review_routes.py
+│   │   ├── user_routes.py
+│   │   ├── admin_routes.py
+│   │   ├── dashboard_routes.py
+│   │   └── upload_routes.py
+│   │
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── product_service.py
+│   │   ├── category_service.py
+│   │   ├── order_service.py
+│   │   ├── cart_service.py
+│   │   ├── payment_service.py
+│   │   ├── news_service.py
+│   │   ├── gold_service.py
+│   │   ├── review_service.py
+│   │   └── user_service.py
+│   │
+│   ├── models/
+│   │   ├── user_model.py
+│   │   ├── product_model.py
+│   │   ├── category_model.py
+│   │   ├── order_model.py
+│   │   ├── cart_model.py
+│   │   ├── payment_model.py
+│   │   ├── news_model.py
+│   │   ├── gold_model.py
+│   │   └── review_model.py
+│   │
+│   ├── utils/
+│   │   ├── jwt_helper.py
+│   │   ├── validators.py
+│   │   ├── response_helper.py
+│   │   ├── upload_helper.py
+│   │   └── password_helper.py
+│   │
+│   ├── middleware/
+│   │   ├── auth_middleware.py
+│   │   └── admin_middleware.py
+│   │
+│   ├── uploads/
+│   │   ├── products/
+│   │   ├── news/
+│   │   └── avatars/
+│   │
+│   └── logs/
+│       └── app.log
+│
+├── frontend/
+│   │
+│   ├── user/
+│   │   ├── index.html
+│   │   ├── products.html
+│   │   ├── product-detail.html
+│   │   ├── cart.html
+│   │   ├── checkout.html
+│   │   ├── payment-success.html
+│   │   ├── payment-failed.html
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   ├── profile.html
+│   │   ├── orders.html
+│   │   ├── order-detail.html
+│   │   ├── news.html
+│   │   ├── news-detail.html
+│   │   ├── gold-price.html
+│   │   ├── contact.html
+│   │   └── about.html
+│   │
+│   ├── admin/
+│   │   ├── login.html
+│   │   ├── dashboard.html
+│   │   ├── products.html
+│   │   ├── product-create.html
+│   │   ├── product-edit.html
+│   │   ├── categories.html
+│   │   ├── orders.html
+│   │   ├── order-detail.html
+│   │   ├── users.html
+│   │   ├── reviews.html
+│   │   ├── news.html
+│   │   ├── news-create.html
+│   │   ├── news-edit.html
+│   │   ├── gold-price.html
+│   │   ├── revenue.html
+│   │   └── settings.html
+│   │
+│   ├── components/
+│   │   ├── header.html
+│   │   ├── footer.html
+│   │   ├── sidebar.html
+│   │   ├── navbar.html
+│   │   ├── product-card.html
+│   │   ├── cart-item.html
+│   │   └── modal.html
+│   │
+│   ├── assets/
+│   │   ├── css/
+│   │   │   ├── style.css
+│   │   │   ├── user.css
+│   │   │   ├── admin.css
+│   │   │   └── responsive.css
+│   │   │
+│   │   ├── js/
+│   │   │   ├── shared/
+│   │   │   │   ├── api.js
+│   │   │   │   ├── auth.js
+│   │   │   │   ├── config.js
+│   │   │   │   ├── helpers.js
+│   │   │   │   └── components.js
+│   │   │   │
+│   │   │   ├── user/
+│   │   │   │   ├── home.js
+│   │   │   │   ├── products.js
+│   │   │   │   ├── product-detail.js
+│   │   │   │   ├── cart.js
+│   │   │   │   ├── checkout.js
+│   │   │   │   ├── login.js
+│   │   │   │   ├── register.js
+│   │   │   │   ├── profile.js
+│   │   │   │   ├── orders.js
+│   │   │   │   ├── news.js
+│   │   │   │   └── gold-price.js
+│   │   │   │
+│   │   │   └── admin/
+│   │   │       ├── dashboard.js
+│   │   │       ├── products.js
+│   │   │       ├── categories.js
+│   │   │       ├── orders.js
+│   │   │       ├── users.js
+│   │   │       ├── reviews.js
+│   │   │       ├── news.js
+│   │   │       ├── gold-price.js
+│   │   │       └── revenue.js
+│   │   │
+│   │   ├── images/
+│   │   │   ├── logo.png
+│   │   │   ├── banner/
+│   │   │   ├── products/
+│   │   │   ├── icons/
+│   │   │   └── default/
+│   │   │
+│   │   └── uploads/
+│   │       ├── products/
+│   │       ├── news/
+│   │       └── avatars/
+│   │
+│   └── libs/
+│       ├── bootstrap/
+│       ├── fontawesome/
+│       └── chartjs/
+│
+├── docs/
+│   ├── database-design.docx
+│   ├── api-documentation.docx
+│   ├── project-report.docx
+│   ├── test-cases.xlsx
+│   └── screenshots/
+│
+├── postman/
+│   └── G9_TrangSuc_API.postman_collection.json
+│
+├── .gitignore
+├── README.md
+└── run.txt

@@ -17,155 +17,77 @@ Công nghệ sử dụng:
 CẤU TRÚC THƯ MỤC DỰ ÁN WEBSITE BÁN TRANG SỨC G9
 =========================================================
 
-G9_Trangsuc/
-│
-├── app.py
-├── requirements.txt
-├── README.md
-│
-├── database/
+
+backend/
+│   ├── app.py
+│   ├── config.py
+│   ├── requirements.txt
 │   │
-│   ├── __init__.py
-│   ├── db_config.py
-│   └── G9_TrangSucDB.sql
-│
-│
-├───────────────────────────────────────
-│  PHẦN 1 — BACKEND API
-├───────────────────────────────────────
-│
-├── nnh_auth_api/                 ← Thành viên: NNH
+│   ├── database/
+│   │   ├── db.py
+│   │   └── init.sql
 │   │
-│   ├── __init__.py
-│   ├── auth_routes.py
-│   └── auth_service.py
-│
-│   Chức năng:
-│   - Đăng nhập
-│   - Đăng ký
-│   - Quên mật khẩu
-│   - Đổi mật khẩu
-│   - Phân quyền
-│   - Thông tin cá nhân
-│
-│
-├── bdh_admin_api/                ← Thành viên: BDH
+│   ├── routes/
+│   │   ├── auth_routes.py
+│   │   ├── product_routes.py
+│   │   ├── category_routes.py
+│   │   ├── order_routes.py
+│   │   ├── news_routes.py
+│   │   ├── gold_routes.py
+│   │   ├── review_routes.py
+│   │   └── admin_routes.py
 │   │
-│   ├── __init__.py
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── product_service.py
+│   │   └── order_service.py
 │   │
-│   ├── product_routes.py
-│   ├── category_routes.py
-│   ├── order_routes.py
-│   ├── user_routes.py
-│   ├── review_routes.py
-│   ├── gold_routes.py
-│   ├── news_routes.py
-│   └── dashboard_routes.py
-│
-│   Chức năng:
-│   - CRUD sản phẩm
-│   - CRUD danh mục
-│   - CRUD đơn hàng
-│   - CRUD người dùng
-│   - CRUD tin tức
-│   - CRUD giá vàng
-│   - Quản lý đánh giá
-│   - Dashboard thống kê
-│
-│
-├───────────────────────────────────────
-│  PHẦN 2 — FRONTEND CLIENT
-├───────────────────────────────────────
+│   ├── models/
+│   │   ├── user_model.py
+│   │   ├── product_model.py
+│   │   └── order_model.py
+│   │
+│   ├── uploads/
+│   │
+│   └── utils/
+│       ├── jwt_helper.py
+│       └── validators.py
 │
 ├── frontend/
-│   │
-│   ├────────────────────────────
-│   │  TRANG KHÁCH HÀNG
-│   ├────────────────────────────
-│   │
-│   ├── index.html                ← Thành viên: PTP
-│   ├── login.html                ← Thành viên: NNH
-│   ├── register.html             ← Thành viên: NNH
-│   ├── forgot-password.html      ← Thành viên: NNH
-│   │
-│   ├── products.html             ← Thành viên: PTP
-│   ├── product-detail.html       ← Thành viên: PTP
-│   ├── cart.html                 ← Thành viên: PTP
-│   │
-│   ├── checkout.html             ← Thành viên: VMC
-│   ├── orders.html               ← Thành viên: VMC
-│   ├── order-detail.html         ← Thành viên: VMC
-│   │
-│   ├── gold-price.html           ← Thành viên: VMC
-│   ├── news.html                 ← Thành viên: VMC
-│   ├── news-detail.html          ← Thành viên: VMC
-│   │
-│   ├── profile.html              ← Thành viên: NNH
-│
-│
-│   ├────────────────────────────
-│   │  TRANG ADMIN
-│   ├────────────────────────────
+│   ├── user/
+│   │   ├── index.html
+│   │   ├── cart.html
+│   │   ├── checkout.html
+│   │   ├── login.html
+│   │   ├── news.html
+│   │   └── gold-price.html
 │   │
 │   ├── admin/
-│   │   │
 │   │   ├── dashboard.html
 │   │   ├── products.html
-│   │   ├── product-create.html
-│   │   ├── product-edit.html
-│   │   │
 │   │   ├── categories.html
-│   │   │
 │   │   ├── orders.html
-│   │   ├── order-detail.html
-│   │   │
-│   │   ├── users.html
-│   │   │
-│   │   ├── gold.html
-│   │   │
-│   │   ├── news.html
-│   │   ├── news-create.html
-│   │   └── news-edit.html
-│
-│
-│   ├────────────────────────────
-│   │  ASSETS
-│   ├────────────────────────────
+│   │   └── news.html
 │   │
 │   ├── assets/
-│   │   │
 │   │   ├── css/
-│   │   │   └── style.css
-│   │   │
 │   │   ├── js/
-│   │   │   │
-│   │   │   ├── api.js
-│   │   │   │
-│   │   │   ├── auth.js
-│   │   │   ├── login.js
-│   │   │   ├── register.js
-│   │   │   ├── forgot-password.js
-│   │   │   │
-│   │   │   ├── product.js
-│   │   │   ├── product-detail.js
-│   │   │   ├── cart.js
-│   │   │   │
-│   │   │   ├── checkout.js
-│   │   │   ├── order.js
-│   │   │   │
-│   │   │   ├── gold.js
-│   │   │   ├── news.js
-│   │   │   │
-│   │   │   ├── profile.js
-│   │   │   ├── review.js
-│   │   │   └── dashboard.js
-│   │   │
-│   │   └── img/
+│   │   │   ├── user/
+│   │   │   ├── admin/
+│   │   │   └── shared/
+│   │   ├── images/
+│   │   └── uploads/
 │   │
-│   └── uploads/
+│   └── components/
+│       ├── header.html
+│       ├── footer.html
+│       └── sidebar.html
 │
-│
-└───────────────────────────────────────
+└── docs/
+    ├── api_docs.md
+    └── database_design.md
+
+───────────────────────────────────────
    GITHUB & QUẢN LÝ SOURCE
 ───────────────────────────────────────
 
