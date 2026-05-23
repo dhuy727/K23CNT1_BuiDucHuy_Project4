@@ -2,63 +2,48 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Giỏ hàng</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>Giỏ hàng - G9 Trang Sức</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body data-page="cart">
+<div id="site-navbar"></div>
+<section class="page-section pt-5">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="index.html">G9 Trang Sức</a>
-
-        <div>
-            <a href="products.html" class="btn btn-outline-light btn-sm">Sản phẩm</a>
-            <a href="checkout.html" class="btn btn-warning btn-sm">Thanh toán</a>
+        <div class="surface-card p-4 p-lg-5 mb-4">
+            <h1 class="section-title mb-2">Giỏ hàng của bạn</h1>
+            <p class="section-subtitle mb-0">Tổng tiền được cập nhật realtime khi bạn thay đổi số lượng hoặc xóa sản phẩm.</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="cartBody">
+                    <tr><td colspan="6" class="text-center py-5">Đang tải giỏ hàng...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="cartEmptyState" class="d-none"></div>
+        <div class="text-end" id="totalBox"></div>
+        <div class="text-end mt-4">
+            <a href="checkout.html" class="btn btn-warning px-5">Tiến hành thanh toán</a>
         </div>
     </div>
-</nav>
-
-<main class="container my-5">
-
-    <h2 class="mb-4">Giỏ hàng của bạn</h2>
-
-    <table class="table table-bordered align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Ảnh</th>
-                <th>Sản phẩm</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-
-        <tbody id="cartBody">
-            <tr>
-                <td colspan="6">Đang tải giỏ hàng...</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h4 id="totalBox" class="text-end text-danger"></h4>
-
-    <div class="text-end">
-        <a href="checkout.html" class="btn btn-warning">
-            Tiến hành thanh toán
-        </a>
-    </div>
-
-</main>
-
-<footer class="bg-dark text-white text-center py-3">
-    G9 Trang Sức © 2026
-</footer>
-
+</section>
+<div id="site-footer"></div>
 <script src="../assets/js/shared/config.js"></script>
+<script src="../assets/js/shared/components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../assets/js/user/cart.js"></script>
-
 </body>
 </html>

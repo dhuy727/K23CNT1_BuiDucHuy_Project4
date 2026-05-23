@@ -2,31 +2,30 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Giá vàng</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>Giá vàng - G9 Trang Sức</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-
-<body>
-
-<nav class="navbar navbar-dark bg-dark">
+<body data-page="gold">
+<div id="site-navbar"></div>
+<section class="banner-section py-5">
     <div class="container">
-        <a href="index.html" class="navbar-brand text-warning fw-bold">G9 Trang Sức</a>
+        <div class="surface-card p-4 p-lg-5">
+            <span class="pill-badge text-dark border-0" style="background: var(--g9-primary-soft);">Giá vàng hôm nay</span>
+            <h1 class="section-title mt-3 mb-2">Bảng giá vàng cập nhật mới nhất</h1>
+            <p class="section-subtitle mb-0">Theo dõi giá mua vào và bán ra theo từng loại vàng.</p>
+        </div>
     </div>
-</nav>
-
-<div class="container py-5">
-
-    <h2 class="mb-4">Bảng giá vàng mới nhất</h2>
-
-    <div class="row" id="gold-list"></div>
-
-</div>
-
-<script src="assets/js/api.js"></script>
-<script src="assets/js/gold.js"></script>
-<script src="assets/js/navbar.js"></script>
-<script src="assets/js/footer.js"></script>
-
+</section>
+<section class="page-section pt-4">
+    <div class="container"><div class="row g-4" id="gold-list"></div></div>
+</section>
+<div id="site-footer"></div>
+<script src="../assets/js/shared/config.js"></script>
+<script src="../assets/js/shared/components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/user/gold.js"></script>
 </body>
 </html>

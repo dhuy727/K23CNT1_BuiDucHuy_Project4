@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 import os
+from werkzeug.utils import secure_filename
 from middleware import require_auth
 
 upload_bp = Blueprint(
@@ -8,6 +9,7 @@ upload_bp = Blueprint(
 )
 
 UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @upload_bp.route("/", methods=["POST"])
 @require_auth
@@ -24,7 +26,7 @@ def upload_image():
 
     filepath = os.path.join(
         UPLOAD_FOLDER,
-        image.filename
+        secure_filename(image.filename)
     )
 
     image.save(filepath)
@@ -32,6 +34,6 @@ def upload_image():
     return jsonify({
 
         "success": True,
-        "filename": image.filename
+        "filename": secure_filename(image.filename)
 
     })

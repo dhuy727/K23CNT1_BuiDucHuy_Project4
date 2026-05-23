@@ -363,10 +363,3 @@ def handler():
 
 ---
 
-## Next Steps
-
-1. **Add Rate Limiting** - Prevent brute force attacks
-2. **Add Refresh Tokens** - Extend session without re-login
-3. **Add Audit Logging** - Track who did what and when
-4. **Add 2FA** - Two-factor authentication
-5. **Add API Key Auth** - For mobile apps/third-party integrations

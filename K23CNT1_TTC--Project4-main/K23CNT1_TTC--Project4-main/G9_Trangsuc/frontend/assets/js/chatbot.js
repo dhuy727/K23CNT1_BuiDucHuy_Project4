@@ -1,0 +1,1 @@
+function openChatbot(){ if(typeof showToast==='function'){ showToast('Tính năng chat hỗ trợ sẽ được tích hợp tiếp ở bước sau.','info'); } else { alert('Tính năng chat hỗ trợ sẽ được tích hợp tiếp ở bước sau.'); } }

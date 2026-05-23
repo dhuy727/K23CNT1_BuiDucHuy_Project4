@@ -1,0 +1,149 @@
+
+(function () {
+    function ensureToastHost() {
+        let host = document.querySelector('.toast-host');
+        if (!host) {
+            host = document.createElement('div');
+            host.className = 'toast-host';
+            document.body.appendChild(host);
+        }
+        return host;
+    }
+    window.showToast = function showToast(message, type = 'info') {
+        const host = ensureToastHost();
+        const toast = document.createElement('div');
+        toast.className = `g9-toast ${type}`;
+        toast.textContent = message;
+        host.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-8px)';
+            toast.style.transition = 'all .25s ease';
+        }, 2600);
+        setTimeout(() => toast.remove(), 3000);
+    };
+    function navLink(label, href, active) { return `<li class="nav-item"><a class="nav-link ${active ? 'active' : ''}" href="${href}">${label}</a></li>`; }
+    function renderNavbar(activePage = '') {
+        return `
+        <nav class="navbar navbar-expand-lg navbar-light g9-navbar sticky-top">
+            <div class="container py-2">
+                <a class="navbar-brand fw-bold" href="index.html">
+                    <span class="brand-mark" style="background: #ffc107; color: #000; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 700; margin-right: 8px;">G9</span>
+                    <span class="brand-text">Trang Sức</span>
+                </a>
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#g9Navbar" aria-controls="g9Navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="g9Navbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+                        ${navLink('Trang chủ', 'index.html', activePage === 'home')}
+                        ${navLink('Sản phẩm', 'products.html', activePage === 'products')}
+                        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle ${activePage === 'categories' ? 'active' : ''}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-list me-1"></i>Danh mục</a><ul class="dropdown-menu shadow-sm" id="g9CategoryDropdown"><li><span class="dropdown-item-text text-muted">Đang tải danh mục...</span></li></ul></li>
+                        ${navLink('Tin tức', 'news.html', activePage === 'news')}
+                        ${navLink('Giá vàng', 'gold-price.html', activePage === 'gold')}
+                    </ul>
+                    <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
+                        <a class="btn btn-outline-warning btn-sm" href="cart.html">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span class="badge rounded-pill bg-danger" id="cartBadge" style="font-size: 0.65rem;">0</span>
+                        </a>
+                        <div id="authArea"></div>
+                    </div>
+                </div>
+            </div>
+        </nav>`;
+    }
+    function renderFooter() {
+        const year = new Date().getFullYear();
+        return `
+        <footer class="site-footer mt-5">
+            <div class="container py-5">
+                <div class="row g-4 align-items-start">
+                    <div class="col-lg-4"><div class="footer-brand d-flex align-items-center gap-3 mb-3"><span class="brand-mark">G9</span><div><div class="h5 mb-1">G9 Trang Sức</div><div class="footer-note">Tinh tế, sang trọng, hiện đại</div></div></div><p class="footer-note mb-0">Website bán trang sức, cập nhật giá vàng và tin tức xu hướng với trải nghiệm mua sắm giống một cửa hàng thật.</p></div>
+                    <div class="col-md-4 col-lg-2"><h6 class="text-white fw-bold mb-3">Khám phá</h6><div class="d-grid gap-2"><a href="index.html">Trang chủ</a><a href="products.html">Sản phẩm</a><a href="news.html">Tin tức</a><a href="gold-price.html">Giá vàng</a></div></div>
+                    <div class="col-md-4 col-lg-3"><h6 class="text-white fw-bold mb-3">Dịch vụ</h6><div class="d-grid gap-2"><a href="cart.html">Giỏ hàng</a><a href="orders.html">Đơn hàng</a><a href="profile.html">Tài khoản</a></div></div>
+                    <div class="col-md-4 col-lg-3"><h6 class="text-white fw-bold mb-3">Liên hệ</h6><p class="footer-note mb-2">Hotline: 1900 888 999</p><p class="footer-note mb-0">Email: support@g9jewelry.vn</p></div>
+                </div>
+                <hr class="border-light opacity-25 my-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between gap-2 small footer-note"><span>© ${year} G9 Trang Sức. All rights reserved.</span><span>Thiết kế vàng - trắng hiện đại</span></div>
+            </div>
+        </footer>`;
+    }
+    async function fetchCategories() { try { const data = await apiFetch(`${API_BASE_URL}/categories/`); if (data.success && Array.isArray(data.data)) return data.data; } catch (error) { console.error(error); } return []; }
+    function renderAuthArea() {
+        const user = getCurrentUser();
+        const el = document.getElementById('authArea');
+        if (!el) return;
+        
+        if (!user) {
+            el.innerHTML = `<a href="login.html" class="btn btn-outline-warning btn-sm">
+                <i class="fa-solid fa-sign-in-alt me-1"></i>
+                Đăng nhập
+            </a>`;
+            return;
+        }
+        
+        const name = escapeHtml(getDisplayName(user));
+        const avatar = escapeHtml(getFirstLetter(user));
+        
+        el.innerHTML = `
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.85rem;">
+                    <span style="display: inline-block; width: 22px; height: 22px; background: #ffc107; color: #000; border-radius: 50%; text-align: center; line-height: 22px; margin-right: 0.5rem; font-weight: 600; font-size: 0.8rem;">${avatar}</span>
+                    ${escapeHtml(name.split(' ')[0])}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="min-width: 180px;">
+                    <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2"></i>Tài khoản</a></li>
+                    <li><a class="dropdown-item" href="orders.html"><i class="fa-solid fa-box me-2"></i>Đơn hàng</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><button class="dropdown-item text-danger" type="button" id="logoutBtn"><i class="fa-solid fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
+                </ul>
+            </div>
+        `;
+        
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => logout());
+        }
+    }
+    async function refreshCartSummary() {
+        const badge = document.getElementById('cartBadge');
+        const user = getCurrentUser();
+        if (!badge) return;
+        if (!user) { badge.textContent = '0'; return; }
+        try {
+            const data = await apiFetch(`${API_BASE_URL}/cart/${user.id}`);
+            const items = Array.isArray(data.data) ? data.data : [];
+            const count = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+            badge.textContent = String(count);
+        } catch (error) {
+            badge.textContent = '0';
+        }
+    }
+    async function renderCategories() {
+        const dropdown = document.getElementById('g9CategoryDropdown');
+        if (!dropdown) return;
+        const categories = await fetchCategories();
+        const topCategories = categories.filter(item => !item.parent_id || item.parent_id === null || item.parent_id === 0);
+        const data = (topCategories.length ? topCategories : categories).slice(0, 10);
+        if (!data.length) { dropdown.innerHTML = '<li><span class="dropdown-item-text text-muted">Chưa có danh mục</span></li>'; return; }
+        dropdown.innerHTML = `<li><a class="dropdown-item" href="products.html">Tất cả sản phẩm</a></li><li><hr class="dropdown-divider"></li>${data.map(category => `<li><a class="dropdown-item" href="products.html?category_id=${encodeURIComponent(category.id)}">${escapeHtml(category.name)}</a></li>`).join('')}`;
+    }
+    function initShell() {
+        const navbarHost = document.getElementById('site-navbar');
+        if (navbarHost) navbarHost.innerHTML = renderNavbar(getPageName());
+        const footerHost = document.getElementById('site-footer');
+        if (footerHost) footerHost.innerHTML = renderFooter();
+        
+        // Ensure authArea is rendered after navbar is inserted
+        setTimeout(() => {
+            renderAuthArea();
+            renderCategories();
+            refreshCartSummary();
+        }, 50);
+        
+        window.addEventListener('g9:cart-changed', refreshCartSummary);
+        window.addEventListener('storage', (event) => { if (event.key === 'cart' || event.key === 'user' || event.key === 'token') { renderAuthArea(); refreshCartSummary(); renderCategories(); } });
+    }
+    document.addEventListener('DOMContentLoaded', initShell);
+})();

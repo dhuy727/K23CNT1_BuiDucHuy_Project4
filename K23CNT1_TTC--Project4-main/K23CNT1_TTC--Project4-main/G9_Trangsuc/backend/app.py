@@ -7,8 +7,9 @@
 # - Chạy server Flask
 # ==============================
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
+import os
 
 # ==============================
 # IMPORT ROUTES
@@ -48,6 +49,13 @@ def home():
         "success": True,
         "message": "G9 Trang Sức API đang hoạt động"
     })
+
+
+@app.route("/uploads/<path:filename>")
+def serve_uploads(filename):
+    uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
+    return send_from_directory(uploads_dir, filename)
+
 
 
 # ==============================

@@ -31,7 +31,7 @@ async function loadAdminProducts() {
                     <td>${product.id}</td>
 
                     <td>
-                        <img src="../assets/images/products/${product.image || 'default.jpg'}"
+                        <img src="${escapeHtml(getImageUrl(product.image))}"
                              width="60"
                              style="height:60px; object-fit:cover;">
                     </td>
