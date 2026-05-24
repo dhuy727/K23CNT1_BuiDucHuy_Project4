@@ -13,13 +13,15 @@ async function loadCategories() {
     const tbody = document.getElementById("categoryTable");
     const parentSelect = document.getElementById("parentId");
 
-    const response = await fetch(`${API_BASE_URL}/categories/`);
-    const result = await response.json();
+    const result = await apiFetch(`${API_BASE_URL}/categories/`);
+    if (!result || !result.success) {
+        throw new Error(result?.message || "Không tải được danh mục");
+    }
 
     tbody.innerHTML = "";
     parentSelect.innerHTML = `<option value="">Không có danh mục cha</option>`;
 
-    result.data.forEach(category => {
+    (result.data || []).forEach(category => {
         tbody.innerHTML += `
             <tr>
                 <td>${category.id}</td>
@@ -68,17 +70,12 @@ categoryForm.addEventListener("submit", async function (e) {
 
     const method = editingCategoryId ? "PUT" : "POST";
 
-    const response = await fetch(url, {
+    const result = await apiFetch(url, {
         method: method,
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify(data)
     });
 
-    const result = await response.json();
-
-    alert(result.message);
+    alert(result.message || "Hoạt động thất bại");
 
     resetCategoryForm();
     loadCategories();
@@ -101,12 +98,11 @@ function editCategory(category) {
 async function deleteCategory(id) {
     if (!confirm("Bạn có chắc muốn xóa danh mục này?")) return;
 
-    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+    const result = await apiFetch(`${API_BASE_URL}/categories/${id}`, {
         method: "DELETE"
     });
 
-    const result = await response.json();
-    alert(result.message);
+    alert(result.message || "Xóa danh mục thất bại");
 
     loadCategories();
 }

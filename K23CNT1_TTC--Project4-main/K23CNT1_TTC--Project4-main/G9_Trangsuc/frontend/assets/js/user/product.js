@@ -1,3 +1,4 @@
+(function() {
 const API_ROOT = typeof API_BASE_URL !== "undefined"
     ? API_BASE_URL
     : "http://127.0.0.1:5000/api";
@@ -14,6 +15,7 @@ let debounceTimer = null;
 const state = {
     keyword: "",
     priceFilter: "all",
+    ratingFilter: "all",
     sort: "default",
 };
 
@@ -44,20 +46,27 @@ function apiFetchSafe(url, options = {}) {
     });
 }
 
-function escapeHtml(value) {
-    if (typeof window.escapeHtml === "function") return window.escapeHtml(value);
+const escapeHtml = (value) => {
+    if (typeof window.g9EscapeHtml === "function") return window.g9EscapeHtml(value);
+    if (typeof window.escapeHtml === "function") {
+        try { return window.escapeHtml(value); } catch (e) { /* fallback below */ }
+    }
+
     return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
-}
+};
 
-function formatMoney(value) {
-    if (typeof window.formatMoney === "function") return window.formatMoney(value);
+const formatMoney = (value) => {
+    if (typeof window.g9FormatMoney === "function") return window.g9FormatMoney(value);
+    if (typeof window.formatMoney === "function") {
+        try { return window.formatMoney(value); } catch (e) { /* fallback below */ }
+    }
     return new Intl.NumberFormat("vi-VN").format(Number(value || 0)) + " VNĐ";
-}
+};
 
 function getCurrentUser() {
     if (typeof window.getCurrentUser === "function") return window.getCurrentUser();
@@ -157,6 +166,7 @@ function updateQueryString() {
     if (activeCategory && activeCategory !== "all") params.set("category", activeCategory);
     if (state.keyword) params.set("q", state.keyword);
     if (state.priceFilter && state.priceFilter !== "all") params.set("price", state.priceFilter);
+    if (state.ratingFilter && state.ratingFilter !== "all") params.set("rating", state.ratingFilter);
     if (state.sort && state.sort !== "default") params.set("sort", state.sort);
 
     const qs = params.toString();
@@ -169,10 +179,12 @@ function readQueryString() {
     activeCategory = params.get("category") || params.get("category_id") || "all";
     state.keyword = params.get("q") || "";
     state.priceFilter = params.get("price") || "all";
+    state.ratingFilter = params.get("rating") || "all";
     state.sort = params.get("sort") || "default";
 
     if (el.searchInput) el.searchInput.value = state.keyword;
     if (el.priceFilter) el.priceFilter.value = state.priceFilter;
+    if (el.ratingFilter) el.ratingFilter.value = state.ratingFilter;
     if (el.sortFilter) el.sortFilter.value = state.sort;
 }
 
@@ -187,6 +199,34 @@ function getPriceFilterBounds(value) {
         default:
             return { min: null, max: null };
     }
+}
+
+function getRatingFilterThreshold(value) {
+    switch (value) {
+        case "5":
+            return 5;
+        case "4":
+            return 4;
+        case "3":
+            return 3;
+        case "2":
+            return 2;
+        case "1":
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+function renderRatingStars(value) {
+    const score = Number(value || 0);
+    const full = Math.round(score);
+    const stars = Array.from({ length: 5 }, (_, index) => {
+        return index < full
+            ? '<i class="fa-solid fa-star text-warning"></i>'
+            : '<i class="fa-regular fa-star text-muted"></i>';
+    });
+    return `<div class="product-rating small mb-2">${stars.join(' ')} ${score > 0 ? `(${score.toFixed(1)})` : '<span class="text-muted">Chưa có đánh giá</span>'}</div>`;
 }
 
 function applyFilters() {
@@ -214,8 +254,10 @@ function applyFilters() {
         const matchesKeyword = !keyword || searchable.includes(keyword);
         const matchesMin = min === null || p.finalPrice >= min;
         const matchesMax = max === null || p.finalPrice <= max;
+        const ratingThreshold = getRatingFilterThreshold(state.ratingFilter);
+        const matchesRating = ratingThreshold === 0 || Number(p.avg_rating || 0) >= ratingThreshold;
 
-        return matchesCategory && matchesKeyword && matchesMin && matchesMax;
+        return matchesCategory && matchesKeyword && matchesMin && matchesMax && matchesRating;
     });
 
     switch (state.sort) {
@@ -282,6 +324,7 @@ function renderProducts() {
 
                     <div class="card-body d-flex flex-column">
                         <div class="product-name">${escapeHtml(p.name)}</div>
+                        <div class="product-rating small mb-2">${renderRatingStars(p.avg_rating)}</div>
                         <div class="product-meta mb-2">${escapeHtml(p.material || "")}</div>
 
                         <div class="product-price mb-3">
@@ -380,6 +423,14 @@ function bindFilters() {
     if (el.priceFilter) {
         el.priceFilter.addEventListener("change", () => {
             state.priceFilter = el.priceFilter.value;
+            updateQueryString();
+            renderProducts();
+        });
+    }
+
+    if (el.ratingFilter) {
+        el.ratingFilter.addEventListener("change", () => {
+            state.ratingFilter = el.ratingFilter.value;
             updateQueryString();
             renderProducts();
         });
@@ -485,6 +536,7 @@ function init() {
         productList: document.getElementById("productList"),
         searchInput: document.getElementById("searchInput"),
         priceFilter: document.getElementById("priceFilter"),
+        ratingFilter: document.getElementById("ratingFilter"),
         sortFilter: document.getElementById("sortFilter"),
         getCategoryButtons: () => document.querySelectorAll(".category-btn"),
     };
@@ -498,3 +550,5 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+window.addToCart = addToCart;
+})();

@@ -11,12 +11,14 @@ async function loadOrders() {
     const tbody = document.getElementById("orderTable");
 
     try {
-        const response = await fetch(`${API_BASE_URL}/orders/`);
-        const result = await response.json();
+        const result = await apiFetch(`${API_BASE_URL}/orders/`);
+        if (!result || !result.success) {
+            throw new Error(result?.message || "Không tải được đơn hàng");
+        }
 
         tbody.innerHTML = "";
 
-        result.data.forEach(order => {
+        (result.data || []).forEach(order => {
             tbody.innerHTML += `
                 <tr>
                     <td>${order.id}</td>
@@ -49,16 +51,12 @@ async function loadOrders() {
 }
 
 async function updateOrderStatus(orderId, status) {
-    const response = await fetch(`${API_BASE_URL}/orders/status/${orderId}`, {
+    const result = await apiFetch(`${API_BASE_URL}/orders/status/${orderId}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify({ status: status })
     });
 
-    const result = await response.json();
-    alert(result.message);
+    alert(result.message || "Cập nhật trạng thái thất bại");
 }
 
 loadOrders();

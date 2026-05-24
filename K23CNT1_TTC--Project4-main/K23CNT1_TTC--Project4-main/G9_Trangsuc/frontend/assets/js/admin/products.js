@@ -20,12 +20,14 @@ async function loadAdminProducts() {
     const tbody = document.getElementById("productTable");
 
     try {
-        const response = await fetch(`${API_BASE_URL}/products/`);
-        const result = await response.json();
+        const result = await apiFetch(`${API_BASE_URL}/products/`);
+        if (!result || !result.success) {
+            throw new Error(result?.message || "Không tải được sản phẩm");
+        }
 
         tbody.innerHTML = "";
 
-        result.data.forEach(product => {
+        (result.data || []).forEach(product => {
             tbody.innerHTML += `
                 <tr>
                     <td>${product.id}</td>
@@ -76,12 +78,14 @@ async function loadAdminProducts() {
 async function loadCategoriesToSelect() {
     const select = document.getElementById("categoryId");
 
-    const response = await fetch(`${API_BASE_URL}/categories/`);
-    const result = await response.json();
+    const result = await apiFetch(`${API_BASE_URL}/categories/`);
+    if (!result || !result.success) {
+        throw new Error(result?.message || "Không tải được danh mục");
+    }
 
     select.innerHTML = `<option value="">-- Chọn danh mục --</option>`;
 
-    result.data.forEach(category => {
+    (result.data || []).forEach(category => {
         select.innerHTML += `
             <option value="${category.id}">
                 ${category.name}
@@ -116,17 +120,12 @@ productForm.addEventListener("submit", async function (e) {
 
     const method = editingProductId ? "PUT" : "POST";
 
-    const response = await fetch(url, {
+    const result = await apiFetch(url, {
         method: method,
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify(data)
     });
 
-    const result = await response.json();
-
-    alert(result.message);
+    alert(result.message || "Hoạt động thất bại");
 
     resetForm();
     loadAdminProducts();
@@ -159,12 +158,11 @@ function editProduct(product) {
 async function deleteProduct(id) {
     if (!confirm("Bạn có chắc muốn xóa sản phẩm này?")) return;
 
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+    const result = await apiFetch(`${API_BASE_URL}/products/${id}`, {
         method: "DELETE"
     });
 
-    const result = await response.json();
-    alert(result.message);
+    alert(result.message || "Xóa sản phẩm thất bại");
 
     loadAdminProducts();
 }

@@ -10,6 +10,7 @@
 
 from flask import Blueprint, jsonify, request
 from models.product_model import ProductModel
+from services.product_service import ProductService
 from middleware import require_auth, require_admin
 from utils.request_validator import ValidationError, validate_product_payload
 
@@ -23,6 +24,10 @@ product_bp = Blueprint("products", __name__)
 def get_products():
     try:
         products = ProductModel.get_all_products()
+        for product in products:
+            product_id = product.get("id")
+            product["avg_rating"] = ProductService.get_product_rating(product_id)
+            product["review_count"] = ProductService.get_review_count(product_id)
         return jsonify({
             "success": True,
             "message": "Lấy sản phẩm thành công",

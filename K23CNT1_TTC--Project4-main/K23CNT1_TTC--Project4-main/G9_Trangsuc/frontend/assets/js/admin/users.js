@@ -11,12 +11,14 @@ async function loadUsers() {
     const tbody = document.getElementById("userTable");
 
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/users`);
-        const result = await response.json();
+        const result = await apiFetch(`${API_BASE_URL}/admin/users`);
+        if (!result || !result.success) {
+            throw new Error(result?.message || "Không tải được người dùng");
+        }
 
         tbody.innerHTML = "";
 
-        result.data.forEach(user => {
+        (result.data || []).forEach(user => {
             tbody.innerHTML += `
                 <tr>
                     <td>${user.id}</td>
@@ -48,16 +50,12 @@ async function loadUsers() {
 }
 
 async function updateUserStatus(userId, status) {
-    const response = await fetch(`${API_BASE_URL}/admin/users/status/${userId}`, {
+    const result = await apiFetch(`${API_BASE_URL}/admin/users/status/${userId}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
         body: JSON.stringify({ status: status })
     });
 
-    const result = await response.json();
-    alert(result.message);
+    alert(result.message || "Cập nhật trạng thái thất bại");
 }
 
 loadUsers();
