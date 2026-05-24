@@ -2,16 +2,8 @@ const API_ROOT = typeof API_BASE_URL !== "undefined"
     ? API_BASE_URL
     : "http://127.0.0.1:5000/api";
 
-
-const el = {
-    productList: document.getElementById("productList"),
-    searchInput: document.getElementById("searchInput"),
-    priceFilter: document.getElementById("priceFilter"),
-    sortFilter: document.getElementById("sortFilter"),
-    cartCount: document.getElementById("cartBadge") || document.getElementById("cartCount"),
-    userArea: document.getElementById("authArea") || document.getElementById("userArea"),
-    getCategoryButtons: () => document.querySelectorAll(".category-btn"),
-};
+// el được khởi tạo trong init() sau khi DOM sẵn sàng
+let el = {};
 
 let products = [];
 let filteredProducts = [];
@@ -358,59 +350,7 @@ async function loadPromotionMapFromProducts(productList) {
     await Promise.all(tasks);
 }
 
-async function refreshCartCount() {
-    const user = getCurrentUser();
 
-    if (!el.cartCount) return;
-
-    if (user?.id) {
-        try {
-            const res = await apiFetchSafe(`${API_ROOT}/cart/${user.id}`);
-            if (res && res.success && Array.isArray(res.data)) {
-                const totalQty = res.data.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
-                el.cartCount.textContent = totalQty;
-                return;
-            }
-        } catch (_) {
-            // fallback localStorage bên dưới
-        }
-    }
-
-    const fallbackCart = getCartFallback();
-    const totalQty = fallbackCart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
-    el.cartCount.textContent = totalQty;
-}
-
-function renderUserArea() {
-    // Navbar user area is rendered centrally in shared/components.js.
-    // Keep this as a safe no-op for pages that still call it.
-    if (!el.userArea) return;
-
-    const user = getCurrentUser();
-
-    if (!user) {
-        el.userArea.innerHTML = `<a href="login.html" class="btn btn-outline-warning rounded-pill px-4">Đăng nhập</a>`;
-        return;
-    }
-
-    const name = getDisplayName(user);
-    el.userArea.innerHTML = `
-        <div class="dropdown">
-            <button class="btn btn-outline-warning dropdown-toggle rounded-pill px-4"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                <i class="fa-solid fa-user me-1"></i>
-                ${escapeHtml(name)}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                <li><a class="dropdown-item" href="profile.html">Tài khoản</a></li>
-                <li><a class="dropdown-item" href="orders.html">Đơn hàng</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><button class="dropdown-item text-danger" type="button" onclick="logoutUser()">Đăng xuất</button></li>
-            </ul>
-        </div>
-    `;
-}
 
 function bindCategoryButtons() {
     const categoryButtons = el.getCategoryButtons();
@@ -483,7 +423,6 @@ async function loadProducts() {
         await loadPromotionMapFromProducts(products);
 
         renderProducts();
-        await refreshCartCount();
     } catch (error) {
         console.error("Không tải được sản phẩm:", error);
         el.productList.innerHTML = `
@@ -519,7 +458,6 @@ async function addToCart(productId) {
 
         if (result.success) {
             showToast(result.message || "Đã thêm vào giỏ hàng", "success");
-            await refreshCartCount();
             dispatchCartChanged();
         } else {
             showToast(result.message || "Không thể thêm vào giỏ hàng", "error");
@@ -542,28 +480,21 @@ function logoutUser() {
 }
 
 function init() {
+    // Khởi tạo el sau khi DOM sẵn sàng
+    el = {
+        productList: document.getElementById("productList"),
+        searchInput: document.getElementById("searchInput"),
+        priceFilter: document.getElementById("priceFilter"),
+        sortFilter: document.getElementById("sortFilter"),
+        getCategoryButtons: () => document.querySelectorAll(".category-btn"),
+    };
+
     readQueryString();
     updateActiveCategoryUI();
     bindCategoryButtons();
     bindFilters();
 
-    if (typeof renderAuthArea === "function") {
-        renderAuthArea();
-    } else {
-        renderUserArea();
-    }
-
     loadProducts();
-
-    window.addEventListener("g9:cart-changed", refreshCartCount);
-    window.addEventListener("storage", (e) => {
-        if (e.key === "cart" || e.key === "user" || e.key === "token") {
-            refreshCartCount();
-            if (typeof renderAuthArea === "function") {
-                renderAuthArea();
-            }
-        }
-    });
 }
 
 document.addEventListener("DOMContentLoaded", init);

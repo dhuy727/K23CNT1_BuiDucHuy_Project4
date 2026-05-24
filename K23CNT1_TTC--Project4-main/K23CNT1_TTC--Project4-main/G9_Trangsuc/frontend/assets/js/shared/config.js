@@ -1,13 +1,17 @@
-// Determine API base URL dynamically: explicit override -> same origin -> fallback
+// Determine API base URL dynamically: explicit override -> same backend -> fallback
 const API_BASE_URL = (function() {
     if (window.__API_BASE__) return window.__API_BASE__;
+    const defaultBase = 'http://127.0.0.1:5000/api';
     try {
         if (window.location && window.location.protocol && window.location.protocol.startsWith('http')) {
-            const origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-            return origin + '/api';
+            const hostname = window.location.hostname;
+            const port = window.location.port || '80';
+            if ((hostname === '127.0.0.1' || hostname === 'localhost') && port === '5000') {
+                return `${window.location.protocol}//${hostname}:${port}/api`;
+            }
         }
     } catch (e) {}
-    return 'http://127.0.0.1:5000/api';
+    return defaultBase;
 })();
 
 // expose for other scripts
@@ -82,6 +86,7 @@ function isAdminUser(user) {
     const role = String(user.role || user.roleName || "").toLowerCase();
     return role === "admin" || user.roleId === 1 || user.roleId === 2;
 }
+window.isAdminUser = isAdminUser;
 
 function getLoginPath() {
     return window.location.pathname.includes("/admin/") ? "../user/login.html" : "login.html";

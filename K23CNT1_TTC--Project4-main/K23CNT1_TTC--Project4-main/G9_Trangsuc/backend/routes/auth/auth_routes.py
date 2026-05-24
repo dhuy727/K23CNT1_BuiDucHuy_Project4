@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models.auth_model import AuthModel
-from utils.jwt_helper import generate_token
+from services.auth_service import AuthService
 from utils.request_validator import ValidationError, validate_login_payload
 
 auth_bp = Blueprint("auth", __name__)
@@ -19,9 +19,11 @@ def login():
 
         # Gọi model để lấy user từ database
         user = AuthModel.get_user_by_username(username)
+        stored_password = user.get("password", "") if user else ""
+        password_is_valid = stored_password == password or AuthService.verify_password(password, stored_password)
 
-        if user and user["password"] == password:
-            token = generate_token(user)
+        if user and password_is_valid:
+            token = AuthService.generate_auth_token(user)
             user.pop("password", None)
 
             return jsonify({

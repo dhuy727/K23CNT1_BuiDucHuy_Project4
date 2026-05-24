@@ -23,3 +23,7 @@ def decode_token(token):
         return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     except:
         return None
+
+
+def verify_token(token):
+    return decode_token(token) is not None
