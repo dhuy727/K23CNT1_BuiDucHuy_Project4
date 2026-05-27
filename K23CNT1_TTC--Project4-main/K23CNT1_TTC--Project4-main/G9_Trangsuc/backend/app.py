@@ -33,7 +33,15 @@ from routes import (
 # ==============================
 # KHỞI TẠO APP
 # ==============================
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(__file__)
+FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
+USER_FRONTEND_DIR = os.path.join(FRONTEND_DIR, "user")
+
+app = Flask(
+    __name__,
+    static_folder=FRONTEND_DIR,
+    static_url_path=""
+)
 
 # ==============================
 # CHO PHÉP FRONTEND GỌI API
@@ -44,11 +52,8 @@ CORS(app)
 # ROUTE TEST SERVER
 # ==============================
 @app.route("/")
-def home():
-    return jsonify({
-        "success": True,
-        "message": "G9 Trang Sức API đang hoạt động"
-    })
+def index():
+    return send_from_directory(USER_FRONTEND_DIR, "index.html")
 
 
 @app.route("/uploads/<path:filename>")

@@ -1,17 +1,5 @@
 checkAdmin();
 
-let editingPromotionId = null;
-
-function resetPromotionForm() {
-    editingPromotionId = null;
-    document.getElementById("promotionId").value = "";
-    document.getElementById("code").value = "";
-    document.getElementById("discountValue").value = "";
-    document.getElementById("startDate").value = "";
-    document.getElementById("endDate").value = "";
-    document.getElementById("status").value = "Active";
-}
-
 function renderPromotionRows(items) {
     const tbody = document.getElementById("promotionTable");
     if (!tbody) return;
@@ -56,50 +44,7 @@ async function loadPromotions() {
 }
 
 function editPromotion(item) {
-    editingPromotionId = item.id;
-    document.getElementById("promotionId").value = item.id || "";
-    document.getElementById("code").value = item.code || "";
-    document.getElementById("discountValue").value = item.discount_value || "";
-    document.getElementById("startDate").value = item.start_date ? item.start_date.split('T')[0] : "";
-    document.getElementById("endDate").value = item.end_date ? item.end_date.split('T')[0] : "";
-    document.getElementById("status").value = item.status || "Active";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function savePromotion() {
-    const payload = {
-        code: document.getElementById("code")?.value.trim(),
-        discount_value: Number(document.getElementById("discountValue")?.value || 0),
-        start_date: document.getElementById("startDate")?.value || null,
-        end_date: document.getElementById("endDate")?.value || null,
-        status: document.getElementById("status")?.value || "Active",
-        categories: []
-    };
-
-    if (!payload.code) {
-        alert("Vui lòng nhập mã khuyến mãi");
-        return;
-    }
-    if (!payload.start_date || !payload.end_date) {
-        alert("Vui lòng chọn ngày bắt đầu và ngày kết thúc");
-        return;
-    }
-
-    try {
-        const url = editingPromotionId ? `${API_BASE_URL}/promotions/${editingPromotionId}` : `${API_BASE_URL}/promotions/`;
-        const method = editingPromotionId ? "PUT" : "POST";
-        const result = await apiFetch(url, {
-            method,
-            body: JSON.stringify(payload)
-        });
-
-        if (!result.success) throw new Error(result.message || "Lưu khuyến mãi thất bại");
-        alert(result.message || (editingPromotionId ? "Đã cập nhật khuyến mãi" : "Đã thêm khuyến mãi"));
-        resetPromotionForm();
-        await loadPromotions();
-    } catch (error) {
-        alert(error.message || "Không thể lưu khuyến mãi");
-    }
+    window.location.href = `promotion-edit.html?id=${item.id}`;
 }
 
 async function deletePromotion(id) {
@@ -116,13 +61,4 @@ async function deletePromotion(id) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadPromotions();
-    const form = document.getElementById("promotionForm");
-    if (form) {
-        form.addEventListener("submit", event => {
-            event.preventDefault();
-            savePromotion();
-        });
-    }
-});
+document.addEventListener("DOMContentLoaded", loadPromotions);

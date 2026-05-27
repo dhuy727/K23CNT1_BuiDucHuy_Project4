@@ -1,20 +1,6 @@
 
 checkAdmin();
 
-let editingGoldId = null;
-
-function resetGoldForm() {
-    editingGoldId = null;
-    const goldId = document.getElementById("goldId");
-    const type = document.getElementById("type");
-    const buyPrice = document.getElementById("buyPrice");
-    const sellPrice = document.getElementById("sellPrice");
-    if (goldId) goldId.value = "";
-    if (type) type.value = "";
-    if (buyPrice) buyPrice.value = "";
-    if (sellPrice) sellPrice.value = "";
-}
-
 function renderGoldRows(items) {
     const tbody = document.getElementById("gold-body");
     if (!tbody) return;
@@ -52,45 +38,20 @@ async function loadGoldPrices() {
 }
 
 function editGold(item) {
-    editingGoldId = item.id;
-    document.getElementById("goldId").value = item.id || "";
-    document.getElementById("type").value = item.gold_type || "";
-    document.getElementById("buyPrice").value = item.buy_price ?? "";
-    document.getElementById("sellPrice").value = item.sell_price ?? "";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-async function saveGold() {
-    const payload = {
-        gold_type: document.getElementById("type")?.value.trim(),
-        buy_price: Number(document.getElementById("buyPrice")?.value || 0),
-        sell_price: Number(document.getElementById("sellPrice")?.value || 0),
-    };
-
-    if (!payload.gold_type) {
-        alert("Vui lòng nhập loại vàng");
-        return;
-    }
-
-    try {
-        const url = editingGoldId ? `${API_BASE_URL}/gold/${editingGoldId}` : `${API_BASE_URL}/gold/`;
-        const method = editingGoldId ? "PUT" : "POST";
-        const result = await apiFetch(url, { method, body: JSON.stringify(payload) });
-        alert(result.message || "Đã lưu giá vàng");
-        resetGoldForm();
-        await loadGoldPrices();
-    } catch (error) {
-        alert("Không thể lưu giá vàng");
-    }
+    window.location.href = `gold-edit.html?id=${item.id}`;
 }
 
 async function deleteGold(id) {
     if (!confirm("Xóa mục giá vàng này?")) return;
-    alert("Backend hiện chưa hỗ trợ xóa giá vàng.");
+    try {
+        const result = await apiFetch(`${API_BASE_URL}/gold/${id}`, {
+            method: "DELETE"
+        });
+        alert(result.message || "Đã xóa giá vàng");
+        await loadGoldPrices();
+    } catch (error) {
+        alert("Không thể xóa giá vàng");
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadGoldPrices();
-    const formButtons = document.querySelectorAll('button[onclick="saveGold()"]');
-    formButtons.forEach(btn => btn.removeAttribute("onclick"));
-});
+document.addEventListener("DOMContentLoaded", loadGoldPrices);

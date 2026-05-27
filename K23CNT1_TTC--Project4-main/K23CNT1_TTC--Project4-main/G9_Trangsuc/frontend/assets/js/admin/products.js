@@ -10,8 +10,6 @@
 
 checkAdmin();
 
-let editingProductId = null;
-
 
 // ==============================
 // LOAD DANH SÁCH SẢN PHẨM
@@ -77,6 +75,7 @@ async function loadAdminProducts() {
 // ==============================
 async function loadCategoriesToSelect() {
     const select = document.getElementById("categoryId");
+    if (!select) return; // Nếu không có select thì không load
 
     const result = await apiFetch(`${API_BASE_URL}/categories/`);
     if (!result || !result.success) {
@@ -95,60 +94,10 @@ async function loadCategoriesToSelect() {
 }
 
 
-// ==============================
-// XỬ LÝ THÊM / CẬP NHẬT SẢN PHẨM
-// ==============================
-const productForm = document.getElementById("productForm");
-
-productForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const data = {
-        name: document.getElementById("name").value.trim(),
-        category_id: document.getElementById("categoryId").value,
-        material: document.getElementById("material").value.trim(),
-        price: document.getElementById("price").value,
-        quantity: document.getElementById("quantity").value,
-        image: document.getElementById("image").value.trim(),
-        description: document.getElementById("description").value.trim(),
-        status: document.getElementById("status").value
-    };
-
-    const url = editingProductId
-        ? `${API_BASE_URL}/products/${editingProductId}`
-        : `${API_BASE_URL}/products/`;
-
-    const method = editingProductId ? "PUT" : "POST";
-
-    const result = await apiFetch(url, {
-        method: method,
-        body: JSON.stringify(data)
-    });
-
-    alert(result.message || "Hoạt động thất bại");
-
-    resetForm();
-    loadAdminProducts();
-});
-
-
-// ==============================
-// ĐỔ DỮ LIỆU LÊN FORM KHI BẤM SỬA
+// CHUYỂN HƯỚNG ĐẾN TRANG CHỈNH SỬA
 // ==============================
 function editProduct(product) {
-    editingProductId = product.id;
-
-    document.getElementById("name").value = product.name;
-    document.getElementById("categoryId").value = product.category_id;
-    document.getElementById("material").value = product.material || "";
-    document.getElementById("price").value = product.price;
-    document.getElementById("quantity").value = product.quantity;
-    document.getElementById("image").value = product.image || "";
-    document.getElementById("description").value = product.description || "";
-    document.getElementById("status").value = product.status || "Còn hàng";
-
-    document.getElementById("formTitle").innerText = "Cập nhật sản phẩm";
-    document.getElementById("submitBtn").innerText = "Cập nhật";
+    window.location.href = `product-edit.html?id=${product.id}`;
 }
 
 
@@ -169,19 +118,7 @@ async function deleteProduct(id) {
 
 
 // ==============================
-// RESET FORM
-// ==============================
-function resetForm() {
-    editingProductId = null;
-    productForm.reset();
-
-    document.getElementById("formTitle").innerText = "Thêm sản phẩm";
-    document.getElementById("submitBtn").innerText = "Thêm sản phẩm";
-}
-
-
-// ==============================
 // KHỞI CHẠY
 // ==============================
-loadAdminProducts();
+loadAdminProducts
 loadCategoriesToSelect();

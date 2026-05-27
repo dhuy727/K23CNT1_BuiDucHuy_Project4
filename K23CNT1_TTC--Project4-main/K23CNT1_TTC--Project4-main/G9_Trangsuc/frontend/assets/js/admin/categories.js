@@ -1,17 +1,16 @@
 // ==============================
 // FILE: admin/categories.js
 // CHỨC NĂNG:
-// - Quản lý danh mục
+// - Hiển thị danh sách danh mục
+// - Sửa danh mục
+// - Xóa danh mục
 // ==============================
 
 checkAdmin();
 
-let editingCategoryId = null;
-
 
 async function loadCategories() {
     const tbody = document.getElementById("categoryTable");
-    const parentSelect = document.getElementById("parentId");
 
     const result = await apiFetch(`${API_BASE_URL}/categories/`);
     if (!result || !result.success) {
@@ -19,7 +18,6 @@ async function loadCategories() {
     }
 
     tbody.innerHTML = "";
-    parentSelect.innerHTML = `<option value="">Không có danh mục cha</option>`;
 
     (result.data || []).forEach(category => {
         tbody.innerHTML += `
@@ -42,59 +40,21 @@ async function loadCategories() {
                 </td>
             </tr>
         `;
-
-        parentSelect.innerHTML += `
-            <option value="${category.id}">
-                ${category.name}
-            </option>
-        `;
     });
 }
 
 
-const categoryForm = document.getElementById("categoryForm");
-
-categoryForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const data = {
-        name: document.getElementById("name").value.trim(),
-        description: document.getElementById("description").value.trim(),
-        parent_id: document.getElementById("parentId").value,
-        status: document.getElementById("status").value
-    };
-
-    const url = editingCategoryId
-        ? `${API_BASE_URL}/categories/${editingCategoryId}`
-        : `${API_BASE_URL}/categories/`;
-
-    const method = editingCategoryId ? "PUT" : "POST";
-
-    const result = await apiFetch(url, {
-        method: method,
-        body: JSON.stringify(data)
-    });
-
-    alert(result.message || "Hoạt động thất bại");
-
-    resetCategoryForm();
-    loadCategories();
-});
-
-
+// ==============================
+// CHUYỂN HƯỚNG ĐẾN TRANG CHỈNH SỬA
+// ==============================
 function editCategory(category) {
-    editingCategoryId = category.id;
-
-    document.getElementById("name").value = category.name;
-    document.getElementById("description").value = category.description || "";
-    document.getElementById("parentId").value = category.parent_id || "";
-    document.getElementById("status").value = category.status || "Hoạt động";
-
-    document.getElementById("formTitle").innerText = "Cập nhật danh mục";
-    document.getElementById("submitBtn").innerText = "Cập nhật";
+    window.location.href = `category-edit.html?id=${category.id}`;
 }
 
 
+// ==============================
+// XÓA DANH MỤC
+// ==============================
 async function deleteCategory(id) {
     if (!confirm("Bạn có chắc muốn xóa danh mục này?")) return;
 
@@ -108,13 +68,7 @@ async function deleteCategory(id) {
 }
 
 
-function resetCategoryForm() {
-    editingCategoryId = null;
-    categoryForm.reset();
-
-    document.getElementById("formTitle").innerText = "Thêm danh mục";
-    document.getElementById("submitBtn").innerText = "Thêm danh mục";
-}
-
-
+// ==============================
+// KHỞI CHẠY
+// ==============================
 loadCategories();
