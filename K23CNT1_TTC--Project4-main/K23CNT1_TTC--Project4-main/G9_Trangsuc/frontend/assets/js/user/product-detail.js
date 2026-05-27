@@ -198,8 +198,9 @@ async function submitReview() {
     const rating = Number(document.getElementById('reviewRating')?.value || 0);
     const content = String(document.getElementById('reviewContent')?.value || '').trim();
     const user = getCurrentUser();
+    const token = getToken();
 
-    if (!user) {
+    if (!user || !token) {
         showToast('Bạn cần đăng nhập để đánh giá.', 'info');
         return;
     }
@@ -219,7 +220,6 @@ async function submitReview() {
             method: 'POST',
             body: JSON.stringify({
                 product_id: Number(productId),
-                user_id: user.id,
                 rating,
                 content
             })

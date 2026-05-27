@@ -6,6 +6,7 @@
 # ==============================
 
 from flask import Blueprint, jsonify, request
+from models.auth_model import AuthModel
 from models.review_model import ReviewModel
 from services.review_service import ReviewService
 from middleware import require_auth, require_user
@@ -37,7 +38,8 @@ def get_reviews_by_product(product_id):
 
 # ==============================
 # API THÊM ĐÁNH GIÁ
-# BODY: product_id, user_id, rating, content
+# BODY: product_id, rating, content
+# User ID is taken from the authenticated JWT token
 # ==============================
 @review_bp.route("/", methods=["POST"])
 @require_auth
@@ -47,9 +49,23 @@ def create_review():
         data = request.json or {}
         validate_review_payload(data)
 
+        user_id = request.current_user.get("id")
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "message": "Không tìm thấy thông tin người dùng"
+            }), 401
+
+        current_user = AuthModel.get_user_by_id(user_id)
+        if not current_user:
+            return jsonify({
+                "success": False,
+                "message": "Người dùng xác thực không tồn tại"
+            }), 401
+
         ReviewModel.create_review(
             product_id=data.get("product_id"),
-            user_id=data.get("user_id"),
+            user_id=user_id,
             rating=data.get("rating"),
             content=data.get("content")
         )

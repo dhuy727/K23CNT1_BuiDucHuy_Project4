@@ -17,11 +17,16 @@ const API_BASE_URL = (function() {
 // expose for other scripts
 window.API_BASE_URL = API_BASE_URL;
 
-function getToken() { return localStorage.getItem("token"); }
+function getToken() {
+    const token = localStorage.getItem("token");
+    if (!token || token === "undefined" || token === "null") return null;
+    return token;
+}
 
 function getCurrentUser() {
     const raw = localStorage.getItem("user");
-    if (!raw) return null;
+    const token = getToken();
+    if (!raw || !token) return null;
     try { return JSON.parse(raw); } catch (error) { return null; }
 }
 
@@ -121,6 +126,9 @@ async function apiFetch(url, options = {}) {
     if (hasBody && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
 
     const response = await fetch(url, { ...options, headers });
+    if (response.status === 401) {
+        clearAuth();
+    }
     let data = {};
     try { data = await response.json(); } catch (error) {}
     if (!response.ok && !data.message) data.message = `Yêu cầu thất bại (${response.status})`;
@@ -153,10 +161,23 @@ function getImageUrl(image, folder = "uploads") {
     const origin = getBackendOrigin();
     const cleanFolder = String(folder || "uploads").replace(/^\/+|\/+$/g, "");
     const cleanValue = value.replace(/\\/g, "/").replace(/^\/+/, "");
+    const isNewsFolder = cleanFolder === "news";
 
-    // Hỗ trợ cả filename thuần, đường dẫn uploads/..., news/... hoặc /uploads/...
-    if (cleanValue.startsWith("uploads/") || cleanValue.startsWith("news/") || cleanValue.startsWith("assets/")) {
+    // Hỗ trợ cả filename thuần, đường dẫn uploads/... hoặc assets/..., và folder news dùng uploads
+    if (cleanValue.startsWith("uploads/")) {
         return `${origin}/${cleanValue}`;
+    }
+
+    if (cleanValue.startsWith("assets/")) {
+        return `${origin}/${cleanValue}`;
+    }
+
+    if (cleanValue.startsWith("news/")) {
+        return `${origin}/uploads/${cleanValue.slice(5)}`;
+    }
+
+    if (isNewsFolder) {
+        return `${origin}/uploads/${cleanValue}`;
     }
 
     // Nếu backend trả về một đường dẫn tương đối bất kỳ thì ghép theo origin backend

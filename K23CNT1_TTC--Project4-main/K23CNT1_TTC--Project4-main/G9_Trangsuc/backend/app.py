@@ -36,11 +36,12 @@ from routes import (
 BASE_DIR = os.path.dirname(__file__)
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
 USER_FRONTEND_DIR = os.path.join(FRONTEND_DIR, "user")
+ASSETS_DIR = os.path.join(FRONTEND_DIR, "assets")
 
 app = Flask(
     __name__,
-    static_folder=FRONTEND_DIR,
-    static_url_path=""
+    static_folder=ASSETS_DIR,
+    static_url_path="/assets"
 )
 
 # ==============================
@@ -56,10 +57,29 @@ def index():
     return send_from_directory(USER_FRONTEND_DIR, "index.html")
 
 
+@app.route("/news/<path:filename>")
+def serve_news_image(filename):
+    uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
+    return send_from_directory(uploads_dir, filename)
+
+
 @app.route("/uploads/<path:filename>")
 def serve_uploads(filename):
     uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
     return send_from_directory(uploads_dir, filename)
+
+
+@app.route("/<path:filename>")
+def serve_frontend(filename):
+    user_file = os.path.join(USER_FRONTEND_DIR, filename)
+    if os.path.isfile(user_file):
+        return send_from_directory(USER_FRONTEND_DIR, filename)
+
+    root_file = os.path.join(FRONTEND_DIR, filename)
+    if os.path.isfile(root_file):
+        return send_from_directory(FRONTEND_DIR, filename)
+
+    return send_from_directory(USER_FRONTEND_DIR, "index.html")
 
 
 

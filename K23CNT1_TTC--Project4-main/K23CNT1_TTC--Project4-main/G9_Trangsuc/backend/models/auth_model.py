@@ -35,3 +35,29 @@ class AuthModel:
         conn.close()
 
         return user
+
+    @staticmethod
+    def get_user_by_id(user_id):
+        """Lấy thông tin user theo ID"""
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT 
+                nd.G9_MaNguoiDung AS id,
+                nd.G9_HoTen AS full_name,
+                nd.G9_TenDangNhap AS username,
+                nd.G9_Email AS email,
+                nd.G9_MatKhau AS password,
+                vt.G9_TenVaiTro AS role
+            FROM G9_NguoiDung nd
+            INNER JOIN G9_VaiTro vt 
+                ON nd.G9_MaVaiTro = vt.G9_MaVaiTro
+            WHERE nd.G9_MaNguoiDung = ?
+        """, (user_id,))
+
+        user = row_to_dict(cursor)
+        cursor.close()
+        conn.close()
+
+        return user

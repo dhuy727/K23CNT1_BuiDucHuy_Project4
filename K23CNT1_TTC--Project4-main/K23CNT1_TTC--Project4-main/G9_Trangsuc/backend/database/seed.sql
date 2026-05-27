@@ -1,25 +1,4 @@
--- -- USE G9_TrangSucDB;
 
--- -- INSERT INTO users(full_name, username, email, password, role)
--- -- VALUES 
--- -- ('Admin G9', 'admin', 'admin@gmail.com', '123456', 'admin'),
--- -- ('Nguyễn Ngọc Hiến', 'hien', 'hien@gmail.com', '123456', 'user');
-
--- -- INSERT INTO categories(name, description)
--- -- VALUES
--- -- ('Nhẫn', 'Các mẫu nhẫn vàng, bạc, kim cương'),
--- -- ('Dây chuyền', 'Trang sức dây chuyền cao cấp'),
--- -- ('Bông tai', 'Bông tai nữ thời trang'),
--- -- ('Lắc tay', 'Lắc tay vàng bạc');
-
--- -- INSERT INTO products(name, price, quantity, image, description, category_id)
--- -- VALUES
--- -- ('Nhẫn vàng 18K', 5000000, 10, 'ring1.jpg', 'Nhẫn vàng 18K sang trọng', 1),
--- -- ('Nhẫn kim cương', 25000000, 5, 'ring2.jpg', 'Nhẫn kim cương cao cấp', 1),
--- -- ('Dây chuyền bạc', 1200000, 20, 'necklace1.jpg', 'Dây chuyền bạc nữ đẹp', 2),
--- -- ('Dây chuyền vàng', 8000000, 8, 'necklace2.jpg', 'Dây chuyền vàng 24K', 2),
--- -- ('Bông tai ngọc trai', 2000000, 15, 'earring1.jpg', 'Bông tai ngọc trai nữ tính', 3),
--- -- ('Lắc tay vàng', 6500000, 12, 'bracelet1.jpg', 'Lắc tay vàng sang trọng', 4);
 -- INSERT INTO G9_VaiTro (G9_TenVaiTro)
 -- VALUES 
 -- (N'Admin'),
@@ -52,18 +31,124 @@
 -- (N'Nhẫn vàng', 2),
 -- (N'Nhẫn bạc', 2);
 
+-- INSERT INTO G9_DanhMuc (G9_TenDanhMuc, G9_MoTa, G9_MaDanhMucCha)
+-- VALUES (N'Bông tai', N'Các mẫu bông tai thời trang', 1);
+
 -- INSERT INTO G9_SanPham
 -- (G9_TenSanPham, G9_MaDanhMuc, G9_ChatLieu, G9_Gia, G9_SoLuongTon, G9_HinhAnhChinh, G9_MoTa)
 -- VALUES
--- (N'Nhẫn vàng 18K', 5, N'Vàng 18K', 5000000, 10, 'nhan1.jpg', N'Nhẫn vàng cao cấp'),
--- (N'Nhẫn bạc 925', 6, N'Bạc 925', 1200000, 20, 'nhan2.jpg', N'Nhẫn bạc đẹp'),
--- (N'Dây chuyền vàng', 3, N'Vàng 24K', 7000000, 5, 'day1.jpg', N'Dây chuyền sang trọng');
+-- (N'Bông tai bạc đính đá xanh', 8, N'Bạc 925', 850000, 15, 'Bong_tai1.jpg', N'Bông tai bạc dáng dài đính đá xanh, phù hợp đi tiệc và sự kiện.'),
+-- (N'Bông tai bạc tròn tinh giản', 8, N'Bạc 925', 650000, 20, 'Bong_tai2.jpg', N'Mẫu bông tai tròn nhỏ, thiết kế tối giản dễ phối đồ.'),
+-- (N'Bông tai bạc đính đá xanh ngọc', 8, N'Bạc 925', 900000, 12, 'Bong_tai3.jpg', N'Bông tai sang trọng với tông xanh nổi bật.'),
+-- (N'Bông tai hoa bạc đính đá', 8, N'Bạc 925', 780000, 18, 'Bong_tai4.jpg', N'Thiết kế hoa tuyết lấp lánh, trẻ trung và nữ tính.'),
+-- (N'Bông tai đen sang trọng', 8, N'Hợp kim mạ bạc', 700000, 16, 'Bong_tai5.jpg', N'Bông tai vòng lớn, phối đá đen nổi bật.'),
+-- (N'Bông tai ngọc trai dáng dài', 8, N'Bạc 925', 980000, 10, 'Bong_tai6.jpg', N'Bông tai ngọc trai thả dài, tinh tế và thanh lịch.'),
+-- (N'Bông tai bạc hiện đại', 8, N'Bạc 925', 820000, 14, 'Bong_tai7.jpg', N'Mẫu bông tai phong cách hiện đại, dễ dùng hằng ngày.'),
+-- (N'Bông tai ngọc trai tròn', 8, N'Bạc 925', 880000, 12, 'Bong_tai_ngoc_trai.jpg', N'Bông tai ngọc trai tròn cổ điển, phù hợp nhiều độ tuổi.'),
+-- (N'Dây chuyền bạc giọt nước', 4, N'Bạc 925', 1250000, 20, 'Day_chuyen_bac.jpg', N'Mặt dây chuyền giọt nước đính đá, thiết kế thanh lịch.'),
+-- (N'Dây chuyền bạc cành lá', 4, N'Bạc 925', 2200000, 15, 'Day_chuyen_bac1.jpg', N'Dây chuyền đính đá dạng cành lá, nổi bật và sang trọng.'),
+-- (N'Dây chuyền bạc nơ treo đá', 4, N'Bạc 925', 1150000, 18, 'Day_chuyen_bac2.jpg', N'Mặt nơ nhỏ kèm đá treo, nhẹ nhàng và nữ tính.'),
+-- (N'Dây chuyền bạc viên đá xanh', 4, N'Bạc 925', 1450000, 16, 'Day_chuyen_bac3.jpg', N'Mặt dây chuyền đính đá xanh, tạo điểm nhấn tinh tế.'),
+-- (N'Dây chuyền bạc hoa xanh', 4, N'Bạc 925', 1600000, 12, 'Day_chuyen_bac4.jpg', N'Thiết kế hoa xanh nổi bật, phù hợp làm quà tặng.'),
+-- (N'Dây chuyền bạc hoa tròn', 4, N'Bạc 925', 1550000, 14, 'Day_chuyen_bac5.jpg', N'Mặt dây chuyền tròn đính đá, ánh sáng đẹp.'),
+-- (N'Dây chuyền bạc sao xanh', 4, N'Bạc 925', 1480000, 13, 'Day_chuyen_bac6.jpg', N'Mẫu mặt sao xanh cá tính, hợp phong cách trẻ.'),
+-- (N'Dây chuyền bạc ngọc trai', 4, N'Bạc 925', 1300000, 17, 'Day_chuyen_bac7.jpg', N'Mặt ngọc trai thanh lịch, dễ phối với váy áo.'),
+-- (N'Dây chuyền bạc bông hoa PNJ', 4, N'Bạc 925', 1650000, 11, 'Day_chuyen_bac8.jpg', N'Thiết kế bông hoa đính đá sang trọng, tinh xảo.'),
+-- (N'Dây chuyền vàng opal', 4, N'Vàng 18K', 7800000, 8, 'Day_chuyen_vang1.jpg', N'Mặt opal nhẹ nhàng, phù hợp phong cách nữ tính.'),
+-- (N'Dây chuyền vàng lá', 4, N'Vàng 18K', 6800000, 8, 'Day_chuyen_vang2.jpg', N'Mặt dây chuyền dáng lá tinh tế, hiện đại.'),
+-- (N'Dây chuyền vàng hoa nhỏ', 4, N'Vàng 18K', 6500000, 10, 'Day_chuyen_vang3.jpg', N'Thiết kế hoa nhỏ sang trọng, hợp làm quà.'),
+-- (N'Dây chuyền vàng nhiều tầng', 4, N'Vàng 18K', 9200000, 6, 'Day_chuyen_vang4.jpg', N'Mẫu dây chuyền nhiều tầng lộng lẫy, nổi bật.'),
+-- (N'Dây chuyền vàng cánh hoa đỏ', 4, N'Vàng 18K', 5400000, 9, 'Day_chuyen_vang5.jpg', N'Mặt cánh hoa nhỏ đính điểm nhấn đỏ độc đáo.'),
+-- (N'Dây chuyền vàng oval xanh', 4, N'Vàng 18K', 4300000, 10, 'Day_chuyen_vang6.jpg', N'Mặt oval xanh, thiết kế thanh lịch tối giản.'),
+-- (N'Dây chuyền vàng trái tim đỏ', 4, N'Vàng 18K', 5100000, 7, 'Day_chuyen_vang7.jpg', N'Mặt trái tim đỏ nữ tính, thích hợp quà tặng.'),
+-- (N'Dây chuyền vàng tim nhỏ', 4, N'Vàng 18K', 4700000, 7, 'Day_chuyen_vang9.jpg', N'Mặt tim nhỏ xinh, dễ đeo hằng ngày.'),
+-- (N'Dây chuyền vàng giọt đá', 4, N'Vàng 18K', 7300000, 6, 'Day_chuyen_vang10.jpg', N'Mặt giọt đá thanh mảnh, phù hợp sự kiện.'),
+-- (N'Lắc tay bạc đặc biệt', 5, N'Bạc 925', 1900000, 10, 'Lac_bac_dac_biet.jpg', N'Lắc tay bạc thiết kế tinh xảo, tạo cảm giác sang trọng.'),
+-- (N'Vòng cổ bạc đá xanh', 5, N'Bạc 925', 1750000, 12, 'Vong_co.jpg', N'Mẫu vòng cổ đá xanh nổi bật, trẻ trung.'),
+-- (N'Vòng tay bạc đá turquoise', 5, N'Bạc 925', 2100000, 11, 'Vong_tay_bac.jpg', N'Vòng tay bạc với viên đá trung tâm ấn tượng.'),
+-- (N'Vòng tay bạc đính đá thanh lịch', 5, N'Bạc 925', 2300000, 9, 'Vong_tay_bac2.jpg', N'Thiết kế vòng tay mảnh, đính đá tinh tế.'),
+-- (N'Vòng tay bạc đá xanh đen', 5, N'Bạc 925', 1850000, 13, 'Vong_tay_bac3.jpg', N'Vòng tay bạc kết hợp đá xanh đen sang trọng.'),
+-- (N'Vòng tay ngọc trai hồng', 5, N'Bạc 925', 1600000, 14, 'Vong_tay_ngoc_trai_hong..jpg', N'Vòng tay ngọc trai hồng nhẹ nhàng, nữ tính.'),
+-- (N'Vòng tay vàng charm 1', 5, N'Vàng 18K', 3500000, 8, 'Vong_tay_vang1.jpg', N'Vòng tay vàng dạng charm phù hợp phong cách trẻ.'),
+-- (N'Vòng tay vàng hộp quà', 5, N'Vàng 18K', 3200000, 8, 'Vong_tay_vang2.jpg', N'Mẫu vòng tay vàng nổi bật, thích hợp làm quà tặng.'),
+-- (N'Vòng tay vàng mặt treo', 5, N'Vàng 18K', 2800000, 10, 'Vong_tay_vang3.jpg', N'Vòng tay vàng mặt treo nhỏ, tạo điểm nhấn nhẹ nhàng.'),
+-- (N'Nhẫn hồng ngọc', 6, N'Vàng 18K', 9500000, 5, 'nhan_hong_ngoc.jpg', N'Nhẫn mặt đá đỏ sang trọng, nổi bật và quý phái.'),
+-- (N'Nhẫn kim cương 1', 7, N'Kim cương', 6500000, 6, 'Nhan_KC.jpg', N'Nhẫn đính đá sáng, kiểu dáng tinh xảo.'),
+-- (N'Nhẫn kim cương 2', 7, N'Kim cương', 7200000, 6, 'Nhan_KC1.jpg', N'Nhẫn thiết kế uốn lượn, đính đá lấp lánh.'),
+-- (N'Nhẫn kim cương 3', 7, N'Kim cương', 6800000, 6, 'Nhan_KC10.jpg', N'Mẫu nhẫn cao cấp, form lớn nổi bật.'),
+-- (N'Nhẫn kim cương 4', 7, N'Kim cương', 7600000, 5, 'Nhan_KC2.jpg', N'Nhẫn đính đá lớn, phù hợp dự tiệc.'),
+-- (N'Nhẫn kim cương 5', 7, N'Kim cương', 8200000, 5, 'Nhan_KC3.jpg', N'Thiết kế cổ điển với điểm nhấn đá sáng.'),
+-- (N'Nhẫn kim cương 6', 7, N'Kim cương', 5400000, 7, 'Nhan_KC4.jpg', N'Nhẫn hộp quà sang trọng, thích hợp làm quà.'),
+-- (N'Nhẫn kim cương 7', 7, N'Kim cương', 6900000, 5, 'Nhan_KC5.jpg', N'Mẫu nhẫn dáng vương miện, thanh lịch.'),
+-- (N'Nhẫn kim cương 8', 7, N'Kim cương', 7300000, 5, 'Nhan_KC6.jpg', N'Nhẫn đính đá lớn, ánh sáng bắt mắt.'),
+-- (N'Nhẫn kim cương 9', 7, N'Kim cương', 6100000, 5, 'Nhan_KC7.jpg', N'Nhẫn họa tiết tròn, sang trọng và bền đẹp.'),
+-- (N'Nhẫn kim cương 10', 7, N'Kim cương', 8800000, 4, 'Nhan_KC8.jpg', N'Mẫu nhẫn đắt giá với đường nét mềm mại.'),
+-- (N'Nhẫn kim cương mặt tròn', 7, N'Kim cương', 5900000, 6, 'Nhan_KC9.jpg', N'Nhẫn mặt tròn đính đá, dễ phối với nhiều trang phục.'),
+-- (N'Nhẫn ngọc trai', 7, N'Bạc 925', 5500000, 6, 'Nhan_ngoc_trai.jpg', N'Nhẫn ngọc trai đen tạo cảm giác sang trọng.'),
+-- (N'Nhẫn vàng trơn', 6, N'Vàng 18K', 6200000, 7, 'Nhan_vang.jpg', N'Nhẫn vàng trơn bản nhỏ, đơn giản và tinh tế.'),
+-- (N'Nhẫn vàng đôi', 6, N'Vàng 18K', 6100000, 7, 'Nhan_vang2.jpg', N'Mẫu nhẫn vàng đôi dễ đeo hằng ngày.'),
+-- (N'Nhẫn vàng đính kim cương', 6, N'Vàng 18K', 7800000, 4, 'Nhan_vang_dinh_kc.jpg', N'Nhẫn vàng đính đá, phù hợp làm quà tặng.'),
+-- (N'Nhẫn vàng đính kim cương 2', 6, N'Vàng 18K', 7400000, 4, 'Nhan_vang_dinh_kc2.jpg', N'Thiết kế đôi nhẫn vàng, ánh kim nổi bật.'),
+-- (N'Nhẫn vàng đính kim cương 3', 6, N'Vàng 18K', 8900000, 3, 'Nhan_vang_dinh_kc3.jpg', N'Nhẫn vàng đính đá đa sắc, sang trọng và bắt mắt.');
 
 -- INSERT INTO G9_HinhAnhSanPham (G9_MaSanPham, G9_DuongDan, G9_LaAnhChinh)
 -- VALUES
 -- (1, 'nhan1_1.jpg', 1),
 -- (1, 'nhan1_2.jpg', 0),
--- (2, 'nhan2_1.jpg', 1);
+-- (2, 'nhan2_1.jpg', 1),
+-- (4, 'Bong_tai1.jpg', 1),
+-- (5, 'Bong_tai2.jpg', 1),
+-- (6, 'Bong_tai3.jpg', 1),
+-- (7, 'Bong_tai4.jpg', 1),
+-- (8, 'Bong_tai5.jpg', 1),
+-- (9, 'Bong_tai6.jpg', 1),
+-- (10, 'Bong_tai7.jpg', 1),
+-- (11, 'Bong_tai_ngoc_trai.jpg', 1),
+-- (12, 'Day_chuyen_bac.jpg', 1),
+-- (13, 'Day_chuyen_bac1.jpg', 1),
+-- (14, 'Day_chuyen_bac2.jpg', 1),
+-- (15, 'Day_chuyen_bac3.jpg', 1),
+-- (16, 'Day_chuyen_bac4.jpg', 1),
+-- (17, 'Day_chuyen_bac5.jpg', 1),
+-- (18, 'Day_chuyen_bac6.jpg', 1),
+-- (19, 'Day_chuyen_bac7.jpg', 1),
+-- (20, 'Day_chuyen_bac8.jpg', 1),
+-- (21, 'Day_chuyen_vang1.jpg', 1),
+-- (22, 'Day_chuyen_vang2.jpg', 1),
+-- (23, 'Day_chuyen_vang3.jpg', 1),
+-- (24, 'Day_chuyen_vang4.jpg', 1),
+-- (25, 'Day_chuyen_vang5.jpg', 1),
+-- (26, 'Day_chuyen_vang6.jpg', 1),
+-- (27, 'Day_chuyen_vang7.jpg', 1),
+-- (28, 'Day_chuyen_vang9.jpg', 1),
+-- (29, 'Day_chuyen_vang10.jpg', 1),
+-- (30, 'Lac_bac_dac_biet.jpg', 1),
+-- (31, 'Vong_co.jpg', 1),
+-- (32, 'Vong_tay_bac.jpg', 1),
+-- (33, 'Vong_tay_bac2.jpg', 1),
+-- (34, 'Vong_tay_bac3.jpg', 1),
+-- (35, 'Vong_tay_ngoc_trai_hong..jpg', 1),
+-- (36, 'Vong_tay_vang1.jpg', 1),
+-- (37, 'Vong_tay_vang2.jpg', 1),
+-- (38, 'Vong_tay_vang3.jpg', 1),
+-- (39, 'nhan_hong_ngoc.jpg', 1),
+-- (40, 'Nhan_KC.jpg', 1),
+-- (41, 'Nhan_KC1.jpg', 1),
+-- (42, 'Nhan_KC10.jpg', 1),
+-- (43, 'Nhan_KC2.jpg', 1),
+-- (44, 'Nhan_KC3.jpg', 1),
+-- (45, 'Nhan_KC4.jpg', 1),
+-- (46, 'Nhan_KC5.jpg', 1),
+-- (47, 'Nhan_KC6.jpg', 1),
+-- (48, 'Nhan_KC7.jpg', 1),
+-- (49, 'Nhan_KC8.jpg', 1),
+-- (50, 'Nhan_KC9.jpg', 1),
+-- (51, 'Nhan_ngoc_trai.jpg', 1),
+-- (52, 'Nhan_vang.jpg', 1),
+-- (53, 'Nhan_vang2.jpg', 1),
+-- (54, 'Nhan_vang_dinh_kc.jpg', 1),
+-- (55, 'Nhan_vang_dinh_kc2.jpg', 1),
+-- (56, 'Nhan_vang_dinh_kc3.jpg', 1);
 
 -- INSERT INTO G9_GioHang (G9_MaNguoiDung)
 -- VALUES (2), (3), (4);
@@ -185,3 +270,91 @@
 -- 1,
 -- 1
 -- );
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Giá vàng hôm nay biến động mạnh')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Giá vàng hôm nay biến động mạnh', N'Giá vàng trong nước tăng giảm theo diễn biến thị trường quốc tế.', N'Nội dung minh họa cho bài viết 1. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc1.jpg', 1, 1);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Xu hướng đầu tư vàng an toàn')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Xu hướng đầu tư vàng an toàn', N'Vàng tiếp tục là kênh tích lũy được nhiều người quan tâm.', N'Nội dung minh họa cho bài viết 2. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc2.jpg', 1, 1);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Khuyến mãi trang sức cuối mùa')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Khuyến mãi trang sức cuối mùa', N'Nhiều mẫu trang sức được giảm giá hấp dẫn trong đợt khuyến mãi.', N'Nội dung minh họa cho bài viết 3. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc3.jpg', 1, 3);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Thị trường vàng miếng sôi động')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Thị trường vàng miếng sôi động', N'Lượng giao dịch vàng miếng tăng lên trong những phiên gần đây.', N'Nội dung minh họa cho bài viết 4. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc4.jpg', 1, 1);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Trang sức cưới được săn đón')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Trang sức cưới được săn đón', N'Các bộ sưu tập trang sức cưới đang được khách hàng quan tâm.', N'Nội dung minh họa cho bài viết 5. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc5.jpg', 1, 2);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Bí quyết chọn nhẫn phù hợp')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Bí quyết chọn nhẫn phù hợp', N'Chọn nhẫn theo dáng tay và phong cách giúp tôn vẻ đẹp tổng thể.', N'Nội dung minh họa cho bài viết 6. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc6.jpg', 1, 2);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Giá vàng thế giới dao động')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Giá vàng thế giới dao động', N'Ảnh hưởng từ chính sách tiền tệ khiến giá vàng thế giới thay đổi.', N'Nội dung minh họa cho bài viết 7. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc7.jpg', 1, 1);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Mẹo chọn quà tặng trang sức')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Mẹo chọn quà tặng trang sức', N'Trang sức luôn là món quà tinh tế trong các dịp đặc biệt.', N'Nội dung minh họa cho bài viết 8. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc8.jpg', 1, 3);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Không khí mua sắm tại cửa hàng')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Không khí mua sắm tại cửa hàng', N'Khách hàng ghé mua các mẫu mới tại cửa hàng trong tuần.', N'Nội dung minh họa cho bài viết 9. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc9.jpg', 1, 2);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Nhẫn và dây chuyền lên ngôi')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Nhẫn và dây chuyền lên ngôi', N'Nhiều khách hàng ưu tiên các mẫu nhẫn và dây chuyền thanh lịch.', N'Nội dung minh họa cho bài viết 10. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc10.jpg', 1, 1);
+-- END;
+
+-- IF NOT EXISTS (SELECT 1 FROM G9_TinTuc WHERE G9_TieuDe = N'Bộ sưu tập mới ra mắt')
+-- BEGIN
+--     INSERT INTO G9_TinTuc
+--     (G9_TieuDe, G9_MoTaNgan, G9_NoiDung, G9_HinhAnh, G9_MaNguoiDang, G9_MaDanhMuc)
+--     VALUES
+--     (N'Bộ sưu tập mới ra mắt', N'Bộ sưu tập mới mang phong cách hiện đại và sang trọng.', N'Nội dung minh họa cho bài viết 11. Hình ảnh được lấy từ bộ ảnh tin tức đã tải lên, phù hợp hiển thị trên trang tin tức của website.', 'Tin_tuc11.jpg', 1, 3);
+-- END;

@@ -123,8 +123,9 @@ def require_user(f):
 
             user_role = request.current_user.get("role", "").lower()
 
-            # User hoặc Admin đều được phép (Admin có quyền cao hơn)
-            if user_role not in ["user", "admin"]:
+            # Bất kỳ người dùng hợp lệ nào cũng được phép (admin hoặc user)
+            # Hỗ trợ cả role tiếng Việt từ database như 'khách hàng' hoặc 'nhân viên'
+            if not user_role or user_role in ["guest", "visitor"]:
                 return jsonify({
                     "success": False,
                     "message": "User access required"

@@ -38,7 +38,7 @@ class ReviewModel:
         return reviews
 
     @staticmethod
-    def create_review(data):
+    def create_review(product_id, user_id, rating, content):
         """Tạo đánh giá mới"""
         conn = get_connection()
         cursor = conn.cursor()
@@ -54,10 +54,10 @@ class ReviewModel:
                 )
                 VALUES (?, ?, ?, ?)
             """, (
-                data.get("product_id"),
-                data.get("user_id"),
-                data.get("rating"),
-                data.get("content")
+                product_id,
+                user_id,
+                rating,
+                content
             ))
 
             conn.commit()

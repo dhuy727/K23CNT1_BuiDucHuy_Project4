@@ -172,9 +172,8 @@ def validate_category_payload(data, require_all=True):
 
 
 def validate_review_payload(data):
-    validate_required_fields(data, ["product_id", "user_id", "rating", "content"])
+    validate_required_fields(data, ["product_id", "rating", "content"])
     to_int(data.get("product_id"), "ID sản phẩm", min_value=1)
-    to_int(data.get("user_id"), "ID người dùng", min_value=1)
     rating = to_int(data.get("rating"), "Số sao", min_value=1, max_value=5)
     validate_string_field("Nội dung đánh giá", data.get("content"), min_length=10, max_length=1000)
     return True

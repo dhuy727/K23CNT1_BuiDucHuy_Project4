@@ -1,5 +1,5 @@
--- -- CREATE DATABASE IF NOT EXISTS G9_TrangSucDB;
--- -- USE G9_TrangSucDB;
+-- CREATE DATABASE G9_TrangSucDB;
+-- GO
 
 -- USE G9_TrangSucDB;
 -- GO
