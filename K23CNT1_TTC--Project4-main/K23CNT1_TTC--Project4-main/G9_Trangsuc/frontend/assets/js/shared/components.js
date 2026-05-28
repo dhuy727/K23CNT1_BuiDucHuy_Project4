@@ -28,8 +28,7 @@
         <nav class="navbar navbar-expand-lg navbar-light g9-navbar sticky-top">
             <div class="container py-2">
                 <a class="navbar-brand fw-bold" href="index.html">
-                    <span class="brand-mark" style="background: #ffc107; color: #000; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 700; margin-right: 8px;">G9</span>
-                    <span class="brand-text">Trang Sức</span>
+                    <img class="navbar-logo" src="${getBackendOrigin()}/uploads/Logo.jpg" alt="G9 Jewelry" />
                 </a>
                 <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#g9Navbar" aria-controls="g9Navbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -37,8 +36,16 @@
                 <div class="collapse navbar-collapse" id="g9Navbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
                         ${navLink('Trang chủ', 'index.html', activePage === 'home')}
-                        ${navLink('Sản phẩm', 'products.html', activePage === 'products')}
-                        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle ${activePage === 'categories' ? 'active' : ''}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-list me-1"></i>Danh mục</a><ul class="dropdown-menu shadow-sm" id="g9CategoryDropdown"><li><span class="dropdown-item-text text-muted">Đang tải danh mục...</span></li></ul></li>
+                        <li class="nav-item dropdown g9-nav-dropdown">
+                            <a class="nav-link dropdown-toggle ${activePage === 'products' || activePage === 'categories' ? 'active' : ''}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sản phẩm
+                            </a>
+                            <ul class="dropdown-menu shadow-sm" id="g9CategoryDropdown">
+                                <li><a class="dropdown-item" href="products.html">Tất cả sản phẩm</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><span class="dropdown-item-text text-muted">Đang tải danh mục...</span></li>
+                            </ul>
+                        </li>
                         ${navLink('Tin tức', 'news.html', activePage === 'news')}
                         ${navLink('Giá vàng', 'gold-price.html', activePage === 'gold')}
                     </ul>
@@ -62,7 +69,7 @@
                     <div class="col-lg-4"><div class="footer-brand d-flex align-items-center gap-3 mb-3"><span class="brand-mark">G9</span><div><div class="h5 mb-1">G9 Trang Sức</div><div class="footer-note">Tinh tế, sang trọng, hiện đại</div></div></div><p class="footer-note mb-0">Website bán trang sức, cập nhật giá vàng và tin tức xu hướng với trải nghiệm mua sắm giống một cửa hàng thật.</p></div>
                     <div class="col-md-4 col-lg-2"><h6 class="text-white fw-bold mb-3">Khám phá</h6><div class="d-grid gap-2"><a href="index.html">Trang chủ</a><a href="products.html">Sản phẩm</a><a href="news.html">Tin tức</a><a href="gold-price.html">Giá vàng</a></div></div>
                     <div class="col-md-4 col-lg-3"><h6 class="text-white fw-bold mb-3">Dịch vụ</h6><div class="d-grid gap-2"><a href="cart.html">Giỏ hàng</a><a href="orders.html">Đơn hàng</a><a href="profile.html">Tài khoản</a></div></div>
-                    <div class="col-md-4 col-lg-3"><h6 class="text-white fw-bold mb-3">Liên hệ</h6><p class="footer-note mb-2">Hotline: 1900 888 999</p><p class="footer-note mb-0">Email: support@g9jewelry.vn</p></div>
+                    <div class="col-md-4 col-lg-3"><h6 class="text-white fw-bold mb-3">Liên hệ</h6><p class="footer-note mb-2">Hotline: 0973378242</p><p class="footer-note mb-0">Email: support@g9jewelry.vn</p></div>
                 </div>
                 <hr class="border-light opacity-25 my-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between gap-2 small footer-note"><span>© ${year} G9 Trang Sức. All rights reserved.</span><span>Thiết kế vàng - trắng hiện đại</span></div>
@@ -70,6 +77,34 @@
         </footer>`;
     }
     async function fetchCategories() { try { const data = await apiFetch(`${API_BASE_URL}/categories/`); if (data.success && Array.isArray(data.data)) return data.data; } catch (error) { console.error(error); } return []; }
+    function buildCategoryTree(categories) {
+        const map = new Map();
+        categories.forEach((category) => map.set(category.id, { ...category, children: [] }));
+        const roots = [];
+        categories.forEach((category) => {
+            const parentId = category.parent_id;
+            if (parentId && map.has(parentId)) {
+                map.get(parentId).children.push(map.get(category.id));
+            } else {
+                roots.push(map.get(category.id));
+            }
+        });
+        return roots;
+    }
+    function renderCategoryItem(category) {
+        const url = `products.html?category_id=${encodeURIComponent(category.id)}`;
+        if (!Array.isArray(category.children) || !category.children.length) {
+            return `<li><a class="dropdown-item" href="${url}">${escapeHtml(category.name)}</a></li>`;
+        }
+        return `
+            <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="${url}">${escapeHtml(category.name)}</a>
+                <ul class="dropdown-menu">
+                    ${category.children.map(renderCategoryItem).join('')}
+                </ul>
+            </li>
+        `;
+    }
     function renderAuthArea() {
         const user = getCurrentUser();
         const el = document.getElementById('authArea');
@@ -124,10 +159,17 @@
         const dropdown = document.getElementById('g9CategoryDropdown');
         if (!dropdown) return;
         const categories = await fetchCategories();
-        const topCategories = categories.filter(item => !item.parent_id || item.parent_id === null || item.parent_id === 0);
-        const data = (topCategories.length ? topCategories : categories).slice(0, 10);
-        if (!data.length) { dropdown.innerHTML = '<li><span class="dropdown-item-text text-muted">Chưa có danh mục</span></li>'; return; }
-        dropdown.innerHTML = `<li><a class="dropdown-item" href="products.html">Tất cả sản phẩm</a></li><li><hr class="dropdown-divider"></li>${data.map(category => `<li><a class="dropdown-item" href="products.html?category_id=${encodeURIComponent(category.id)}">${escapeHtml(category.name)}</a></li>`).join('')}`;
+        const roots = buildCategoryTree(categories);
+        const data = roots.length ? roots : categories;
+        if (!data.length) {
+            dropdown.innerHTML = '<li><span class="dropdown-item-text text-muted">Chưa có danh mục</span></li>';
+            return;
+        }
+        dropdown.innerHTML = `
+            <li><a class="dropdown-item" href="products.html">Tất cả sản phẩm</a></li>
+            <li><hr class="dropdown-divider"></li>
+            ${data.map(renderCategoryItem).join('')}
+        `;
     }
     function initShell() {
         const navbarHost = document.getElementById('site-navbar');
@@ -141,6 +183,13 @@
             renderCategories();
             refreshCartSummary();
         }, 50);
+
+        const productDropdown = document.querySelector('.g9-nav-dropdown');
+        if (productDropdown) {
+            productDropdown.addEventListener('mouseenter', () => {
+                renderCategories();
+            });
+        }
         
         window.addEventListener('g9:cart-changed', refreshCartSummary);
         window.addEventListener('storage', (event) => { if (event.key === 'cart' || event.key === 'user' || event.key === 'token') { renderAuthArea(); refreshCartSummary(); renderCategories(); } });

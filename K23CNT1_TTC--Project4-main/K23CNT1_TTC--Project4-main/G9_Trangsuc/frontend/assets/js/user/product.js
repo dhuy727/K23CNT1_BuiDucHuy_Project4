@@ -10,6 +10,10 @@ let products = [];
 let filteredProducts = [];
 let categoryPromotionMap = new Map();
 let activeCategory = "all";
+let selectedCategoryId = null;
+let categories = [];
+let categoryDescendantsMap = new Map();
+let categoryNameToIdMap = new Map();
 let debounceTimer = null;
 
 const state = {
@@ -152,6 +156,80 @@ function normalizeProduct(product) {
     };
 }
 
+function buildCategoryMaps(categoryList) {
+    categories = Array.isArray(categoryList) ? categoryList : [];
+    categoryNameToIdMap = new Map();
+    const childrenMap = new Map();
+
+    categories.forEach((category) => {
+        if (category && category.id != null) {
+            const id = String(category.id);
+            const name = (category.name || "").trim().toLowerCase();
+            if (name) {
+                categoryNameToIdMap.set(name, id);
+            }
+            const parentId = category.parent_id != null ? String(category.parent_id) : null;
+            if (!childrenMap.has(parentId)) {
+                childrenMap.set(parentId, []);
+            }
+            childrenMap.get(parentId).push(id);
+        }
+    });
+
+    categoryDescendantsMap = new Map();
+    function collectDescendants(id, visited = new Set()) {
+        if (!id || visited.has(id)) return [];
+        visited.add(id);
+        const descendants = [id];
+        const children = childrenMap.get(id) || [];
+        for (const childId of children) {
+            descendants.push(...collectDescendants(childId, visited));
+        }
+        return descendants;
+    }
+
+    categories.forEach((category) => {
+        if (category && category.id != null) {
+            const id = String(category.id);
+            const descendants = new Set(collectDescendants(id));
+            categoryDescendantsMap.set(id, descendants);
+        }
+    });
+}
+
+function resolveSelectedCategoryId() {
+    if (selectedCategoryId) return String(selectedCategoryId);
+    if (!activeCategory || activeCategory === "all") return null;
+    const normalized = String(activeCategory).trim();
+    if (/^[0-9]+$/.test(normalized)) {
+        return normalized;
+    }
+    return categoryNameToIdMap.get(normalized.toLowerCase()) || null;
+}
+
+function getCategoryIdsByKeyword(keyword) {
+    const lowerKeyword = String(keyword || "").trim().toLowerCase();
+    if (!lowerKeyword) return null;
+
+    const matchedCategoryIds = categories
+        .filter((category) => String(category.name || "").toLowerCase().includes(lowerKeyword))
+        .map((category) => String(category.id));
+
+    if (!matchedCategoryIds.length) return null;
+
+    const ids = new Set();
+    matchedCategoryIds.forEach((categoryId) => {
+        const descendants = categoryDescendantsMap.get(categoryId);
+        if (descendants && descendants.size) {
+            descendants.forEach((descId) => ids.add(descId));
+        } else {
+            ids.add(categoryId);
+        }
+    });
+
+    return ids;
+}
+
 function updateActiveCategoryUI() {
     const categoryButtons = el.getCategoryButtons();
     categoryButtons.forEach((btn) => {
@@ -163,7 +241,17 @@ function updateActiveCategoryUI() {
 function updateQueryString() {
     const params = new URLSearchParams();
 
-    if (activeCategory && activeCategory !== "all") params.set("category", activeCategory);
+    if (activeCategory && activeCategory !== "all") {
+        const resolvedId = resolveSelectedCategoryId();
+        if (resolvedId) {
+            params.set("category_id", resolvedId);
+            if (!/^[0-9]+$/.test(String(activeCategory).trim())) {
+                params.set("category", activeCategory);
+            }
+        } else {
+            params.set("category", activeCategory);
+        }
+    }
     if (state.keyword) params.set("q", state.keyword);
     if (state.priceFilter && state.priceFilter !== "all") params.set("price", state.priceFilter);
     if (state.ratingFilter && state.ratingFilter !== "all") params.set("rating", state.ratingFilter);
@@ -176,7 +264,22 @@ function updateQueryString() {
 
 function readQueryString() {
     const params = new URLSearchParams(window.location.search);
-    activeCategory = params.get("category") || params.get("category_id") || "all";
+    const categoryIdParam = params.get("category_id");
+    const categoryParam = params.get("category");
+    activeCategory = categoryParam || categoryIdParam || "all";
+    selectedCategoryId = categoryIdParam ? String(categoryIdParam) : null;
+
+    if (!selectedCategoryId && activeCategory && activeCategory !== "all") {
+        selectedCategoryId = categoryNameToIdMap.get(String(activeCategory).trim().toLowerCase()) || null;
+    }
+
+    if (selectedCategoryId && !categoryParam) {
+        const matchedCategory = categories.find((category) => String(category.id) === selectedCategoryId);
+        if (matchedCategory && matchedCategory.name) {
+            activeCategory = matchedCategory.name;
+        }
+    }
+
     state.keyword = params.get("q") || "";
     state.priceFilter = params.get("price") || "all";
     state.ratingFilter = params.get("rating") || "all";
@@ -232,13 +335,17 @@ function renderRatingStars(value) {
 function applyFilters() {
     const keyword = state.keyword.trim().toLowerCase();
     const { min, max } = getPriceFilterBounds(state.priceFilter);
+    const resolvedCategoryId = resolveSelectedCategoryId();
+    const keywordCategoryIds = getCategoryIdsByKeyword(keyword);
 
     filteredProducts = products.filter((product) => {
         const p = normalizeProduct(product);
+        const productCategoryId = String(p.category_id || "");
 
         const matchesCategory =
             activeCategory === "all" ||
-            String(p.category_id || "") === String(activeCategory) ||
+            (resolvedCategoryId !== null && categoryDescendantsMap.has(resolvedCategoryId) && categoryDescendantsMap.get(resolvedCategoryId).has(productCategoryId)) ||
+            String(p.category_id || "") === resolvedCategoryId ||
             String(p.category_name || "").toLowerCase() === String(activeCategory).toLowerCase();
 
         const searchable = [
@@ -251,7 +358,7 @@ function applyFilters() {
             .join(" ")
             .toLowerCase();
 
-        const matchesKeyword = !keyword || searchable.includes(keyword);
+        const matchesKeyword = !keyword || searchable.includes(keyword) || (keywordCategoryIds && keywordCategoryIds.has(productCategoryId));
         const matchesMin = min === null || p.finalPrice >= min;
         const matchesMax = max === null || p.finalPrice <= max;
         const ratingThreshold = getRatingFilterThreshold(state.ratingFilter);
@@ -401,6 +508,9 @@ function bindCategoryButtons() {
         btn.addEventListener("click", (e) => {
             e.preventDefault();
             activeCategory = btn.dataset.category || "all";
+            selectedCategoryId = activeCategory !== "all"
+                ? categoryNameToIdMap.get(String(activeCategory).trim().toLowerCase()) || null
+                : null;
             updateActiveCategoryUI();
             updateQueryString();
             renderProducts();
@@ -442,6 +552,19 @@ function bindFilters() {
             updateQueryString();
             renderProducts();
         });
+    }
+}
+
+async function loadCategories() {
+    try {
+        const res = await apiFetchSafe(`${API_ROOT}/categories/`);
+        const list = Array.isArray(res.data) ? res.data : [];
+        buildCategoryMaps(list);
+    } catch (error) {
+        console.warn("Không tải được danh mục:", error);
+        categories = [];
+        categoryDescendantsMap.clear();
+        categoryNameToIdMap.clear();
     }
 }
 
@@ -530,7 +653,7 @@ function logoutUser() {
     window.location.href = getLoginPath();
 }
 
-function init() {
+async function init() {
     // Khởi tạo el sau khi DOM sẵn sàng
     el = {
         productList: document.getElementById("productList"),
@@ -541,6 +664,7 @@ function init() {
         getCategoryButtons: () => document.querySelectorAll(".category-btn"),
     };
 
+    await loadCategories();
     readQueryString();
     updateActiveCategoryUI();
     bindCategoryButtons();

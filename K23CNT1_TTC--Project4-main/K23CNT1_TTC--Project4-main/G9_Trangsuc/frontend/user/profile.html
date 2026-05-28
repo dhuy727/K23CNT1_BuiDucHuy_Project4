@@ -27,6 +27,56 @@
                 <div class="col-md-6"><div class="feature-card"><h3>Vai trò</h3><p id="profile-role"></p></div></div>
             </div>
             <div class="mt-4"><a href="orders.html" class="btn btn-warning px-5">Xem đơn hàng của tôi</a></div>
+            <hr class="my-5">
+            <div class="profile-edit-form">
+                <h2 class="section-title mb-3">Chỉnh sửa thông tin tài khoản</h2>
+                <form id="profile-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="input-fullname" class="form-label">Họ tên</label>
+                            <input id="input-fullname" type="text" class="form-control" placeholder="Nhập họ tên" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="input-username" class="form-label">Tên đăng nhập</label>
+                            <input id="input-username" type="text" class="form-control" placeholder="Tên đăng nhập" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="input-email" class="form-label">Email</label>
+                            <input id="input-email" type="email" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="input-phone" class="form-label">Số điện thoại</label>
+                            <input id="input-phone" type="tel" class="form-control" placeholder="Số điện thoại" required>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-warning px-4">Lưu thay đổi</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr class="my-5">
+            <div class="profile-password-form">
+                <h2 class="section-title mb-3">Đổi mật khẩu</h2>
+                <form id="password-form">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="input-current-password" class="form-label">Mật khẩu hiện tại</label>
+                            <input id="input-current-password" type="password" class="form-control" placeholder="Mật khẩu hiện tại" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="input-new-password" class="form-label">Mật khẩu mới</label>
+                            <input id="input-new-password" type="password" class="form-control" placeholder="Mật khẩu mới" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="input-confirm-password" class="form-label">Xác nhận mật khẩu</label>
+                            <input id="input-confirm-password" type="password" class="form-control" placeholder="Xác nhận mật khẩu" required>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-outline-warning px-4">Đổi mật khẩu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </section>

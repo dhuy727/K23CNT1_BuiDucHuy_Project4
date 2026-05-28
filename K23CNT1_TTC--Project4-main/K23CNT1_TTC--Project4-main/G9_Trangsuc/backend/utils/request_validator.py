@@ -49,6 +49,26 @@ def validate_string_field(name, value, min_length=1, max_length=None, required=T
     return True
 
 
+def validate_email_field(name, value, required=True):
+    if _is_empty(value):
+        if required:
+            raise ValidationError(f"{name} không được để trống")
+        return True
+
+    if not isinstance(value, str):
+        raise ValidationError(f"{name} phải là chuỗi ký tự")
+
+    email = value.strip()
+    pattern = r"^[\w\.-]+@[\w\.-]+\.[A-Za-z]{2,}$"
+    if not re.match(pattern, email):
+        raise ValidationError(f"{name} không hợp lệ")
+
+    if len(email) < 5 or len(email) > 100:
+        raise ValidationError(f"{name} phải có từ 5 đến 100 ký tự")
+
+    return True
+
+
 def to_int(value, name, min_value=None, max_value=None, required=True):
     if value is None or value == "":
         if required:
@@ -247,6 +267,16 @@ def validate_gold_payload(data, require_all=True):
 def validate_login_payload(data):
     validate_required_fields(data, ["username", "password"])
     validate_string_field("Tên đăng nhập", data.get("username"), min_length=3, max_length=100)
+    validate_string_field("Mật khẩu", data.get("password"), min_length=6, max_length=100)
+    return True
+
+
+def validate_register_payload(data):
+    validate_required_fields(data, ["fullname", "username", "email", "phone", "password"])
+    validate_string_field("Họ tên", data.get("fullname"), min_length=3, max_length=150)
+    validate_string_field("Tên đăng nhập", data.get("username"), min_length=3, max_length=50)
+    validate_email_field("Email", data.get("email"))
+    validate_string_field("Số điện thoại", data.get("phone"), min_length=10, max_length=15)
     validate_string_field("Mật khẩu", data.get("password"), min_length=6, max_length=100)
     return True
 
