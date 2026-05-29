@@ -5,6 +5,7 @@
 # ==============================
 
 from database.db import get_connection, rows_to_dict, row_to_dict
+from models.product_model import ProductModel
 
 
 class OrderModel:
@@ -148,6 +149,12 @@ class OrderModel:
             total = sum([item.ThanhTien for item in cart_items])
 
             # Tạo đơn hàng
+            # Nếu phương thức thanh toán là PAYPAL thì để trạng thái đơn là 'Chưa thanh toán'
+            # để tránh tự động duyệt đơn trước khi PayPal xác nhận.
+            order_status = 'Chờ xác nhận'
+            if payment_method and payment_method.upper() == 'PAYPAL':
+                order_status = 'Chưa thanh toán'
+
             cursor.execute("""
                 INSERT INTO G9_DonHang
                 (
@@ -155,11 +162,12 @@ class OrderModel:
                     G9_TenNguoiNhan,
                     G9_SDTNhan,
                     G9_DiaChiGiao,
-                    G9_TongTien
+                    G9_TongTien,
+                    G9_TrangThai
                 )
                 OUTPUT INSERTED.G9_MaDonHang
-                VALUES (?, ?, ?, ?, ?)
-            """, (user_id, receiver_name, phone, address, total))
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (user_id, receiver_name, phone, address, total, order_status))
 
             order_id = cursor.fetchone()[0]
 
@@ -183,16 +191,20 @@ class OrderModel:
                     WHERE G9_MaSanPham = ?
                 """, (item.G9_SoLuong, item.G9_MaSanPham))
 
-            # Tạo bản ghi thanh toán
+                ProductModel.sync_status_with_stock(item.G9_MaSanPham, cursor=cursor)
+
+            # Tạo bản ghi thanh toán và đặt trạng thái thanh toán là 'Chưa thanh toán'
+            payment_status = 'Chưa thanh toán'
             cursor.execute("""
                 INSERT INTO G9_ThanhToan
                 (
                     G9_MaDonHang,
                     G9_PhuongThuc,
-                    G9_SoTien
+                    G9_SoTien,
+                    G9_TrangThai
                 )
-                VALUES (?, ?, ?)
-            """, (order_id, payment_method, total))
+                VALUES (?, ?, ?, ?)
+            """, (order_id, payment_method, total, payment_status))
 
             # Xóa chi tiết giỏ hàng sau khi đặt hàng
             cursor.execute("""
@@ -202,6 +214,117 @@ class OrderModel:
 
             conn.commit()
             return order_id
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def cancel_unpaid_order_and_restore_cart(order_id):
+        """Hủy đơn chưa thanh toán và trả sản phẩm về giỏ hàng (idempotent)."""
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+            order_id = int(order_id)
+
+            cursor.execute("""
+                SELECT G9_MaNguoiDung, G9_TrangThai
+                FROM G9_DonHang
+                WHERE G9_MaDonHang = ?
+            """, (order_id,))
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError("Đơn hàng không tồn tại")
+
+            user_id, status = row[0], row[1]
+
+            if status == "Đã hủy":
+                return {"restored": False, "message": "Đơn đã được hủy trước đó"}
+
+            if status == "Đã thanh toán":
+                raise ValueError("Không thể hủy đơn đã thanh toán")
+
+            if status != "Chưa thanh toán":
+                raise ValueError(f"Không thể hủy đơn ở trạng thái '{status}'")
+
+            cursor.execute("""
+                SELECT G9_MaSanPham, G9_SoLuong, G9_DonGia
+                FROM G9_ChiTietDonHang
+                WHERE G9_MaDonHang = ?
+            """, (order_id,))
+            items = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT G9_MaGioHang
+                FROM G9_GioHang
+                WHERE G9_MaNguoiDung = ?
+            """, (user_id,))
+            cart = cursor.fetchone()
+
+            if not cart:
+                cursor.execute("""
+                    INSERT INTO G9_GioHang(G9_MaNguoiDung)
+                    OUTPUT INSERTED.G9_MaGioHang
+                    VALUES(?)
+                """, (user_id,))
+                cart_id = cursor.fetchone()[0]
+            else:
+                cart_id = cart[0]
+
+            for item in items:
+                product_id, qty, price = item[0], item[1], item[2]
+
+                cursor.execute("""
+                    UPDATE G9_SanPham
+                    SET G9_SoLuongTon = G9_SoLuongTon + ?
+                    WHERE G9_MaSanPham = ?
+                """, (qty, product_id))
+
+                ProductModel.sync_status_with_stock(product_id, cursor=cursor)
+
+                cursor.execute("""
+                    SELECT G9_MaChiTiet, G9_SoLuong
+                    FROM G9_ChiTietGioHang
+                    WHERE G9_MaGioHang = ? AND G9_MaSanPham = ?
+                """, (cart_id, product_id))
+                existing = cursor.fetchone()
+
+                if existing:
+                    cursor.execute("""
+                        UPDATE G9_ChiTietGioHang
+                        SET G9_SoLuong = G9_SoLuong + ?
+                        WHERE G9_MaChiTiet = ?
+                    """, (qty, existing[0]))
+                else:
+                    cursor.execute("""
+                        INSERT INTO G9_ChiTietGioHang
+                        (G9_MaGioHang, G9_MaSanPham, G9_SoLuong, G9_DonGia)
+                        VALUES (?, ?, ?, ?)
+                    """, (cart_id, product_id, qty, price))
+
+            cursor.execute("""
+                UPDATE G9_DonHang
+                SET G9_TrangThai = ?
+                WHERE G9_MaDonHang = ?
+            """, ("Đã hủy", order_id))
+
+            cursor.execute("""
+                INSERT INTO G9_LichSuTrangThaiDonHang
+                (G9_MaDonHang, G9_TrangThai)
+                VALUES (?, ?)
+            """, (order_id, "Đã hủy"))
+
+            cursor.execute("""
+                UPDATE G9_ThanhToan
+                SET G9_TrangThai = ?
+                WHERE G9_MaDonHang = ?
+            """, ("Thất bại", order_id))
+
+            conn.commit()
+            return {"restored": True, "message": "Đã hủy đơn và trả sản phẩm về giỏ hàng"}
         except Exception as e:
             conn.rollback()
             raise e

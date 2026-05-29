@@ -27,4 +27,4 @@ async function loadDashboard() {
     }
 }
 
-loadDashboard();
+document.addEventListener("DOMContentLoaded", loadDashboard);

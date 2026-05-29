@@ -139,6 +139,19 @@
     transform: scale(1.08);
 }
 
+.product-card--out-of-stock {
+    opacity: 0.92;
+}
+
+.product-card--out-of-stock:hover {
+    transform: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.product-img--out-of-stock {
+    filter: grayscale(0.35);
+}
+
 .badge-soft {
     background: rgba(255, 193, 7, 0.15);
     color: #b89319;

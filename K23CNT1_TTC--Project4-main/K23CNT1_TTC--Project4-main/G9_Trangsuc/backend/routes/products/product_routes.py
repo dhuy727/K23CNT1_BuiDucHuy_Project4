@@ -12,7 +12,7 @@ from flask import Blueprint, jsonify, request
 from models.product_model import ProductModel
 from services.product_service import ProductService
 from middleware import require_auth, require_admin
-from utils.request_validator import ValidationError, validate_product_payload
+from utils.request_validator import ValidationError, validate_product_payload, validate_status_field
 
 product_bp = Blueprint("products", __name__)
 
@@ -24,10 +24,18 @@ product_bp = Blueprint("products", __name__)
 def get_products():
     try:
         products = ProductModel.get_all_products()
+        from models.review_model import ReviewModel
         for product in products:
             product_id = product.get("id")
-            product["avg_rating"] = ProductService.get_product_rating(product_id)
-            product["review_count"] = ProductService.get_review_count(product_id)
+            reviews = ReviewModel.get_reviews_by_product(product_id)
+            count = len(reviews) if reviews else 0
+            product["review_count"] = count
+            if count > 0:
+                product["avg_rating"] = round(
+                    sum(r.get("rating", 0) for r in reviews) / count, 1
+                )
+            else:
+                product["avg_rating"] = 0
         return jsonify({
             "success": True,
             "message": "Lấy sản phẩm thành công",
@@ -108,6 +116,46 @@ def update_product(id):
         return jsonify({
             "success": True,
             "message": "Cập nhật sản phẩm thành công"
+        })
+    except ValidationError as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ==============================
+# API CẬP NHẬT TRẠNG THÁI SẢN PHẨM
+# BODY: status
+# ==============================
+@product_bp.route("/status/<int:id>", methods=["PUT"])
+@require_auth
+@require_admin
+def update_product_status(id):
+    try:
+        data = request.json or {}
+        status = data.get("status")
+        validate_status_field(status, ["Còn hàng", "Hết hàng", "Ngừng bán"])
+
+        product = ProductModel.get_product_by_id(id)
+        if not product:
+            return jsonify({
+                "success": False,
+                "message": "Không tìm thấy sản phẩm"
+            }), 404
+
+        if int(product.get("quantity") or 0) <= 0:
+            status = "Hết hàng"
+
+        ProductModel.update_product_status(id, status)
+        return jsonify({
+            "success": True,
+            "message": "Cập nhật trạng thái sản phẩm thành công"
         })
     except ValidationError as e:
         return jsonify({

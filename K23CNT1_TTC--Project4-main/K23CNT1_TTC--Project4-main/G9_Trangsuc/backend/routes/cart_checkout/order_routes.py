@@ -104,6 +104,7 @@ def checkout():
             address=data.get("address")
         )
 
+        order_total = OrderService.calculate_order_total(user_id)
         order_id = OrderModel.create_order(
             user_id=user_id,
             receiver_name=data.get("receiver_name"),
@@ -114,7 +115,8 @@ def checkout():
         return jsonify({
             "success": True,
             "message": "Đặt hàng thành công",
-            "order_id": order_id
+            "order_id": order_id,
+            "total": order_total
         })
     except ValidationError as e:
         return jsonify({

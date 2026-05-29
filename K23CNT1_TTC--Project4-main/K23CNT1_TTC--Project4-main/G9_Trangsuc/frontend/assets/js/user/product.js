@@ -321,6 +321,19 @@ function getRatingFilterThreshold(value) {
     }
 }
 
+function getProductStockState(product) {
+    const quantity = Number(product.quantity || 0);
+    const status = String(product.status || "").trim();
+
+    if (status === "Ngừng bán") {
+        return { outOfStock: true, label: "Ngừng bán" };
+    }
+    if (quantity <= 0 || status === "Hết hàng") {
+        return { outOfStock: true, label: "Hết hàng" };
+    }
+    return { outOfStock: false, label: "Còn hàng" };
+}
+
 function renderRatingStars(value) {
     const score = Number(value || 0);
     const full = Math.round(score);
@@ -408,21 +421,26 @@ function renderProducts() {
 
     el.productList.innerHTML = filteredProducts.map((product, index) => {
         const p = normalizeProduct(product);
+        const stock = getProductStockState(p);
 
         return `
             <div class="col-sm-6 col-xl-4 fade-up" style="animation-delay: ${Math.min(index * 0.05, 0.35)}s">
-                <div class="card product-card h-100">
+                <div class="card product-card h-100${stock.outOfStock ? " product-card--out-of-stock" : ""}">
                     <div class="position-relative overflow-hidden">
                         <img
                             src="${escapeHtml(getImageUrl(p.image))}"
-                            class="card-img-top"
+                            class="card-img-top${stock.outOfStock ? " product-img--out-of-stock" : ""}"
                             alt="${escapeHtml(p.name)}"
                             loading="lazy"
                         >
                         <span class="badge badge-soft position-absolute top-0 start-0 m-3">
                             ${escapeHtml(p.category_name || "Trang sức")}
                         </span>
-                        ${p.hasDiscount ? `
+                        ${stock.outOfStock ? `
+                            <span class="badge bg-secondary position-absolute top-0 end-0 m-3">
+                                ${escapeHtml(stock.label)}
+                            </span>
+                        ` : p.hasDiscount ? `
                             <span class="badge bg-danger position-absolute top-0 end-0 m-3">
                                 Giảm ${formatMoney(p.discountValue)}
                             </span>
@@ -448,6 +466,11 @@ function renderProducts() {
                                     Tiết kiệm ${formatMoney(p.discountValue)}
                                 </div>
                             ` : ""}
+                            ${stock.outOfStock ? `
+                                <div class="small text-danger fw-semibold mt-1">
+                                    ${escapeHtml(stock.label)}
+                                </div>
+                            ` : ""}
                         </div>
 
                         <div class="d-flex gap-2 mt-auto">
@@ -456,11 +479,20 @@ function renderProducts() {
                                 Xem chi tiết
                             </a>
 
-                            <button type="button"
-                                    class="btn btn-gold"
-                                    onclick="addToCart(${Number(p.id)})">
-                                + Giỏ
-                            </button>
+                            ${stock.outOfStock ? `
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        disabled
+                                        title="${escapeHtml(stock.label)}">
+                                    ${escapeHtml(stock.label)}
+                                </button>
+                            ` : `
+                                <button type="button"
+                                        class="btn btn-gold"
+                                        onclick="addToCart(${Number(p.id)})">
+                                    + Giỏ
+                                </button>
+                            `}
                         </div>
                     </div>
                 </div>
@@ -611,6 +643,13 @@ async function loadProducts() {
 
 async function addToCart(productId) {
     const user = getCurrentUser();
+    const product = products.find((item) => Number(item.id) === Number(productId));
+    const stock = getProductStockState(product || {});
+
+    if (stock.outOfStock) {
+        showToast(`Sản phẩm đã ${stock.label.toLowerCase()}.`, "error");
+        return;
+    }
 
     if (!user?.id) {
         showToast("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.", "info");

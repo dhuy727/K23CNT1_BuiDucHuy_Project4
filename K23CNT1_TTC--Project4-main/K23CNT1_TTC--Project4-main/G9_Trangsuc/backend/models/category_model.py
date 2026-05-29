@@ -4,7 +4,7 @@
 # - Xử lý tất cả SQL logic liên quan tới danh mục
 # ==============================
 
-from database.db import get_connection, rows_to_dict
+from database.db import get_connection, rows_to_dict, row_to_dict
 
 
 class CategoryModel:
@@ -32,6 +32,29 @@ class CategoryModel:
         conn.close()
 
         return categories
+
+    @staticmethod
+    def get_category_by_id(category_id):
+        """Lấy chi tiết danh mục theo ID"""
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                G9_MaDanhMuc AS id,
+                G9_TenDanhMuc AS name,
+                G9_MoTa AS description,
+                G9_MaDanhMucCha AS parent_id,
+                G9_TrangThai AS status
+            FROM G9_DanhMuc
+            WHERE G9_MaDanhMuc = ?
+        """, (category_id,))
+
+        category = row_to_dict(cursor)
+        cursor.close()
+        conn.close()
+
+        return category
 
     @staticmethod
     def create_category(data):

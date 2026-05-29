@@ -21,6 +21,32 @@ def get_gold_price():
 
 
 # ==============================
+# API LẤY CHI TIẾT GIÁ VÀNG
+# URL: /api/gold/<id>
+# ==============================
+@gold_bp.route("/<int:gold_id>", methods=["GET"])
+def get_gold_price_detail(gold_id):
+    try:
+        item = GoldModel.get_gold_price_by_id(gold_id)
+        if not item:
+            return jsonify({
+                "success": False,
+                "message": "Không tìm thấy giá vàng"
+            }), 404
+
+        return jsonify({
+            "success": True,
+            "message": "Lấy chi tiết giá vàng thành công",
+            "data": item
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ==============================
 # API THÊM GIÁ VÀNG
 # ==============================
 @gold_bp.route("/", methods=["POST"])

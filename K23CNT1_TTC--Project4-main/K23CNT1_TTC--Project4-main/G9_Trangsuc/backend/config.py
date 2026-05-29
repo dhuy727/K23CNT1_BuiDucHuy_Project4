@@ -24,3 +24,8 @@ class Config:
 
     # Cấu hình JWT
     JWT_SECRET = os.getenv("JWT_SECRET")
+
+    # Cấu hình PayPal
+    PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+    PAYPAL_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
+    PAYPAL_BASE_URL = os.getenv("PAYPAL_BASE_URL")

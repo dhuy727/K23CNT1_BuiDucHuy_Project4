@@ -37,6 +37,32 @@ def get_categories():
 
 
 # ==============================
+# API LẤY CHI TIẾT DANH MỤC
+# URL: /api/categories/<id>
+# ==============================
+@category_bp.route("/<int:category_id>", methods=["GET"])
+def get_category(category_id):
+    try:
+        category = CategoryModel.get_category_by_id(category_id)
+        if not category:
+            return jsonify({
+                "success": False,
+                "message": "Không tìm thấy danh mục"
+            }), 404
+
+        return jsonify({
+            "success": True,
+            "message": "Lấy chi tiết danh mục thành công",
+            "data": category
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ==============================
 # API THÊM DANH MỤC MỚI
 # BODY: name, description, parent_id, status
 # ==============================
@@ -48,12 +74,12 @@ def create_category():
         data = request.json or {}
         validate_category_payload(data)
 
-        CategoryModel.create_category(
-            name=data.get("name"),
-            description=data.get("description"),
-            parent_id=data.get("parent_id"),
-            status=data.get("status", "Hoạt động")
-        )
+        CategoryModel.create_category({
+            "name": data.get("name"),
+            "description": data.get("description"),
+            "parent_id": data.get("parent_id"),
+            "status": data.get("status", "Hoạt động"),
+        })
 
         return jsonify({
             "success": True,
@@ -86,13 +112,12 @@ def update_category(category_id):
         data = request.json or {}
         validate_category_payload(data, require_all=False)
 
-        CategoryModel.update_category(
-            category_id=category_id,
-            name=data.get("name"),
-            description=data.get("description"),
-            parent_id=data.get("parent_id"),
-            status=data.get("status")
-        )
+        CategoryModel.update_category(category_id, {
+            "name": data.get("name"),
+            "description": data.get("description"),
+            "parent_id": data.get("parent_id"),
+            "status": data.get("status"),
+        })
 
         return jsonify({
             "success": True,

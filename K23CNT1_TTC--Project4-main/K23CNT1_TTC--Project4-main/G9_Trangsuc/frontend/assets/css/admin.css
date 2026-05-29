@@ -1,0 +1,73 @@
+/* ==================== G9 ADMIN PANEL ==================== */
+
+.admin-card {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.fw-700 {
+    font-weight: 700;
+}
+
+.fw-800 {
+    font-weight: 800;
+}
+
+.admin-page-wrap .form-label,
+body[data-page^="admin"] .form-label {
+    font-weight: 700;
+    color: var(--g9-secondary);
+    margin-bottom: 0.6rem;
+}
+
+.admin-card-title-icon {
+    color: var(--g9-primary);
+}
+
+/* Dashboard stats */
+.stat-icon {
+    opacity: 0.6;
+}
+
+.stat-icon--primary {
+    color: var(--g9-primary);
+}
+
+.stat-icon--success {
+    color: #28a745;
+}
+
+.stat-icon--info {
+    color: #007bff;
+}
+
+.stat-icon--warning {
+    color: #ffc107;
+}
+
+.stat-value--primary {
+    color: var(--g9-primary);
+}
+
+.stat-value--success {
+    color: #28a745;
+}
+
+.stat-value--info {
+    color: #007bff;
+}
+
+/* News edit: form hidden until data loads */
+.admin-form-hidden {
+    display: none !important;
+}
+
+/* Table thumbnails (rendered from admin JS) */
+.admin-table-thumb {
+    height: 60px;
+    object-fit: cover;
+}
+
+.admin-news-thumb {
+    object-fit: cover;
+    border-radius: 12px;
+}

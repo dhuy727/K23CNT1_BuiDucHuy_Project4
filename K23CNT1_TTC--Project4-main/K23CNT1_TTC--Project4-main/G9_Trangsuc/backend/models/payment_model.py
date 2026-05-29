@@ -32,3 +32,26 @@ class PaymentModel:
         conn.close()
 
         return payment
+
+    @staticmethod
+    def update_payment_status(order_id, status, transaction_id=None):
+        """Cập nhật trạng thái và mã giao dịch thanh toán"""
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                UPDATE G9_ThanhToan
+                SET G9_TrangThai = ?,
+                    G9_MaGiaoDich = ?,
+                    G9_NgayThanhToan = GETDATE()
+                WHERE G9_MaDonHang = ?
+            """, (status, transaction_id, order_id))
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            conn.close()

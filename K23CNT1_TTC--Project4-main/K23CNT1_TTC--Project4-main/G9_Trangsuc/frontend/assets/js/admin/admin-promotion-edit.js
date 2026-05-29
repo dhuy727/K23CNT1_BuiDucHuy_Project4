@@ -1,23 +1,24 @@
 checkAdmin();
 
 const promotionId = new URLSearchParams(window.location.search).get("id");
-let loadedPromotion = null;
+
+function toDateInputValue(value) {
+    if (!value) return "";
+    return String(value).split("T")[0].split(" ")[0];
+}
 
 async function loadPromotion() {
-    if (!promotionId) return;
-    try {
-        const result = await apiFetch(`${API_BASE_URL}/promotions/${promotionId}`);
-        loadedPromotion = result.data || null;
-        if (!loadedPromotion) return;
-
-        document.getElementById("code").value = loadedPromotion.code || "";
-        document.getElementById("discountValue").value = loadedPromotion.discount_value || "";
-        document.getElementById("startDate").value = loadedPromotion.start_date ? loadedPromotion.start_date.split('T')[0] : "";
-        document.getElementById("endDate").value = loadedPromotion.end_date ? loadedPromotion.end_date.split('T')[0] : "";
-        document.getElementById("status").value = loadedPromotion.status || "Active";
-    } catch (error) {
-        alert("Không tải được khuyến mãi");
+    const result = await apiFetch(`${API_BASE_URL}/promotions/${promotionId}`);
+    if (!result || result.success === false || !result.data) {
+        throw new Error(result?.message || "Không tải được khuyến mãi");
     }
+
+    const item = result.data;
+    document.getElementById("code").value = item.code || "";
+    document.getElementById("discountValue").value = item.discount_value ?? "";
+    document.getElementById("startDate").value = toDateInputValue(item.start_date);
+    document.getElementById("endDate").value = toDateInputValue(item.end_date);
+    document.getElementById("status").value = item.status || "Active";
 }
 
 async function updatePromotion() {
@@ -45,6 +46,10 @@ async function updatePromotion() {
             body: JSON.stringify(payload),
         });
 
+        if (result.success === false) {
+            throw new Error(result.message || "Không thể cập nhật khuyến mãi");
+        }
+
         alert(result.message || "Đã cập nhật khuyến mãi");
         window.location.href = "promotions.html";
     } catch (error) {
@@ -52,4 +57,17 @@ async function updatePromotion() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", loadPromotion);
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!promotionId) {
+        alert("Không tìm thấy ID khuyến mãi");
+        window.location.href = "promotions.html";
+        return;
+    }
+
+    try {
+        await loadPromotion();
+    } catch (error) {
+        alert(error.message || "Không tải được khuyến mãi");
+        window.location.href = "promotions.html";
+    }
+});

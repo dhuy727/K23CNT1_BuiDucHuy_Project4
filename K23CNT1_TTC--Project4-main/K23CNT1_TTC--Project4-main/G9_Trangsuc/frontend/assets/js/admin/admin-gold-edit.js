@@ -1,21 +1,17 @@
 checkAdmin();
 
 const goldId = new URLSearchParams(window.location.search).get("id");
-let loadedGold = null;
 
 async function loadGold() {
-    if (!goldId) return;
-    try {
-        const result = await apiFetch(`${API_BASE_URL}/gold/${goldId}`);
-        loadedGold = result.data || null;
-        if (!loadedGold) return;
-
-        document.getElementById("type").value = loadedGold.gold_type || "";
-        document.getElementById("buyPrice").value = loadedGold.buy_price || "";
-        document.getElementById("sellPrice").value = loadedGold.sell_price || "";
-    } catch (error) {
-        alert("Không tải được giá vàng");
+    const result = await apiFetch(`${API_BASE_URL}/gold/${goldId}`);
+    if (!result || result.success === false || !result.data) {
+        throw new Error(result?.message || "Không tải được giá vàng");
     }
+
+    const item = result.data;
+    document.getElementById("type").value = item.gold_type || "";
+    document.getElementById("buyPrice").value = item.buy_price ?? "";
+    document.getElementById("sellPrice").value = item.sell_price ?? "";
 }
 
 async function updateGold() {
@@ -36,6 +32,10 @@ async function updateGold() {
             body: JSON.stringify(payload),
         });
 
+        if (result.success === false) {
+            throw new Error(result.message || "Không thể cập nhật giá vàng");
+        }
+
         alert(result.message || "Đã cập nhật giá vàng");
         window.location.href = "gold-price.html";
     } catch (error) {
@@ -43,4 +43,17 @@ async function updateGold() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", loadGold);
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!goldId) {
+        alert("Không tìm thấy ID giá vàng");
+        window.location.href = "gold-price.html";
+        return;
+    }
+
+    try {
+        await loadGold();
+    } catch (error) {
+        alert(error.message || "Không tải được giá vàng");
+        window.location.href = "gold-price.html";
+    }
+});

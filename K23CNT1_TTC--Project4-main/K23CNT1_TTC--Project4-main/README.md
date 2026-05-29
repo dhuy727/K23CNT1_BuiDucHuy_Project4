@@ -63,6 +63,7 @@ Các gói backend chính:
 - `python-dotenv`
 - `pyodbc`
 - `PyJWT`
+- `requests`
 
 ## Cơ sở dữ liệu
 

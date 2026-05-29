@@ -200,10 +200,17 @@ def validate_review_payload(data):
 
 
 def validate_cart_payload(data):
+    """Validate payload khi thêm sản phẩm vào giỏ"""
     validate_required_fields(data, ["user_id", "product_id", "quantity"])
     to_int(data.get("user_id"), "ID người dùng", min_value=1)
     to_int(data.get("product_id"), "ID sản phẩm", min_value=1)
     to_int(data.get("quantity"), "Số lượng", min_value=1)
+    return True
+
+
+def validate_update_cart_payload(data):
+    """Validate payload khi cập nhật số lượng sản phẩm trong giỏ"""
+    to_int(data.get("quantity"), "Số lượng", min_value=1, required=True)
     return True
 
 

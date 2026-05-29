@@ -21,6 +21,32 @@ def get_news():
 
 
 # ==============================
+# API LẤY CHI TIẾT TIN TỨC
+# URL: /api/news/<id>
+# ==============================
+@news_bp.route("/<int:news_id>", methods=["GET"])
+def get_news_detail(news_id):
+    try:
+        item = NewsModel.get_news_by_id(news_id)
+        if not item:
+            return jsonify({
+                "success": False,
+                "message": "Không tìm thấy tin tức"
+            }), 404
+
+        return jsonify({
+            "success": True,
+            "message": "Lấy chi tiết tin tức thành công",
+            "data": item
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ==============================
 # API THÊM TIN TỨC
 # ==============================
 @news_bp.route("/", methods=["POST"])

@@ -15,7 +15,7 @@
         <div class="auth-card mx-auto text-center">
             <div class="icon-circle mx-auto mb-3">!</div>
             <h1 class="auth-title mb-2">Thanh toán chưa thành công</h1>
-            <p class="auth-desc">Vui lòng thử lại hoặc liên hệ hỗ trợ nếu bạn cần giúp đỡ.</p>
+            <p class="auth-desc">Thanh toán chưa hoàn tất. Sản phẩm sẽ được trả lại giỏ hàng để bạn thử lại.</p>
             <a href="cart.html" class="btn btn-warning px-5">Quay lại giỏ hàng</a>
         </div>
     </section>
@@ -23,6 +23,33 @@
 <div id="site-footer"></div>
     <script src="../assets/js/shared/config.js?v=3"></script>
 <script src="../assets/js/shared/components.js?v=3"></script>
+    <script>
+        // Khi PayPal redirect về trang thất bại, sẽ có token (paypal order id) trong query
+        (function(){
+            const params = new URLSearchParams(window.location.search);
+            const paypalOrderId = params.get('token');
+            if (!paypalOrderId) return;
+
+            async function notifyCancel() {
+                try {
+                    const backendOrigin = getBackendOrigin();
+                    const res = await fetch(`${backendOrigin}/api/paypal/cancel`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paypal_order_id: paypalOrderId })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok && data.success !== false) {
+                        dispatchCartChanged();
+                    }
+                } catch (err) {
+                    console.error('Failed to notify backend of PayPal cancel', err);
+                }
+            }
+
+            notifyCancel();
+        })();
+    </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

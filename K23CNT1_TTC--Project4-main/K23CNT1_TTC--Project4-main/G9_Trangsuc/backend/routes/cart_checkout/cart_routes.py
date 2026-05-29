@@ -10,7 +10,7 @@
 from flask import Blueprint, jsonify, request
 from models.cart_model import CartModel
 from middleware import require_auth, is_current_user
-from utils.request_validator import ValidationError, validate_cart_payload
+from utils.request_validator import ValidationError, validate_cart_payload, validate_update_cart_payload
 
 cart_bp = Blueprint("cart", __name__)
 
@@ -96,7 +96,7 @@ def add_to_cart():
 def update_cart_item(cart_detail_id):
     try:
         data = request.json or {}
-        validate_cart_payload(data)
+        validate_update_cart_payload(data)
         quantity = int(data.get("quantity", 1))
 
         CartModel.update_cart_item(cart_detail_id, quantity)

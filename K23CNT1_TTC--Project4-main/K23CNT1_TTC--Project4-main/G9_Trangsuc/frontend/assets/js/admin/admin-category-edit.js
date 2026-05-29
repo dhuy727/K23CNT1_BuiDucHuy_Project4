@@ -1,21 +1,22 @@
 checkAdmin();
 
 const categoryId = new URLSearchParams(window.location.search).get("id");
-let loadedCategory = null;
 
 async function loadParentCategories() {
     const select = document.getElementById("parentId");
+    if (!select) return;
+
     const result = await apiFetch(`${API_BASE_URL}/categories/`);
-    
     if (!result || !result.success) {
         throw new Error(result?.message || "Không tải được danh mục");
     }
 
+    select.innerHTML = `<option value="">-- Không có danh mục cha --</option>`;
     (result.data || []).forEach(category => {
-        if (category.id !== categoryId) { // Không cho chọn chính nó làm danh mục cha
+        if (String(category.id) !== String(categoryId)) {
             select.innerHTML += `
                 <option value="${category.id}">
-                    ${category.name}
+                    ${escapeHtml(category.name || "")}
                 </option>
             `;
         }
@@ -23,19 +24,16 @@ async function loadParentCategories() {
 }
 
 async function loadCategory() {
-    if (!categoryId) return;
-    try {
-        const result = await apiFetch(`${API_BASE_URL}/categories/${categoryId}`);
-        loadedCategory = result.data || null;
-        if (!loadedCategory) return;
-
-        document.getElementById("name").value = loadedCategory.name || "";
-        document.getElementById("parentId").value = loadedCategory.parent_id || "";
-        document.getElementById("status").value = loadedCategory.status || "Hoạt động";
-        document.getElementById("description").value = loadedCategory.description || "";
-    } catch (error) {
-        alert("Không tải được danh mục");
+    const result = await apiFetch(`${API_BASE_URL}/categories/${categoryId}`);
+    if (!result || result.success === false || !result.data) {
+        throw new Error(result?.message || "Không tải được danh mục");
     }
+
+    const item = result.data;
+    document.getElementById("name").value = item.name || "";
+    document.getElementById("parentId").value = item.parent_id ?? "";
+    document.getElementById("status").value = item.status || "Hoạt động";
+    document.getElementById("description").value = item.description || "";
 }
 
 async function updateCategory() {
@@ -52,6 +50,10 @@ async function updateCategory() {
             body: JSON.stringify(payload),
         });
 
+        if (result.success === false) {
+            throw new Error(result.message || "Không thể cập nhật danh mục");
+        }
+
         alert(result.message || "Đã cập nhật danh mục");
         window.location.href = "categories.html";
     } catch (error) {
@@ -59,7 +61,18 @@ async function updateCategory() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadParentCategories();
-    loadCategory();
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!categoryId) {
+        alert("Không tìm thấy ID danh mục");
+        window.location.href = "categories.html";
+        return;
+    }
+
+    try {
+        await loadParentCategories();
+        await loadCategory();
+    } catch (error) {
+        alert(error.message || "Không tải được danh mục");
+        window.location.href = "categories.html";
+    }
 });

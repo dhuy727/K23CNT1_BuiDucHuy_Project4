@@ -14,6 +14,7 @@ from .news import news_bp
 from .gold import gold_bp
 from .promotions import promotion_bp
 from .uploads import upload_bp
+from .payments.paypal_routes import paypal_bp
 
 __all__ = [
     "auth_bp",
@@ -28,5 +29,6 @@ __all__ = [
     "news_bp",
     "gold_bp",
     "promotion_bp",
-    "upload_bp"
+    "upload_bp",
+    "paypal_bp"
 ]

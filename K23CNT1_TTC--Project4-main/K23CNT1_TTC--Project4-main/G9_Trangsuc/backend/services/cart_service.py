@@ -23,7 +23,7 @@ class CartService:
         if not cart_items:
             return 0
 
-        total = sum([item.get("total_price", 0) for item in cart_items])
+        total = sum([item.get("total", 0) for item in cart_items])
         return round(total, 0)
 
     # ==============================

@@ -75,7 +75,7 @@ class ProductService:
         if not product:
             raise ValueError("Sản phẩm không tồn tại")
 
-        available_quantity = product.get("stock", 0)
+        available_quantity = product.get("quantity", 0)
 
         if quantity > available_quantity:
             raise ValueError(f"Chỉ còn {available_quantity} sản phẩm trong kho")
@@ -93,7 +93,7 @@ class ProductService:
         if not product:
             return False
 
-        return product.get("stock", 0) > 0
+        return product.get("quantity", 0) > 0
 
     # ==============================
     # TÍNH GIÁ SAU GIẢM GIÁ

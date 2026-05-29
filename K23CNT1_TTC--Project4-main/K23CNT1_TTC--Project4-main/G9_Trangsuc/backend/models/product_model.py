@@ -71,12 +71,58 @@ class ProductModel:
         return product
 
     @staticmethod
+    def resolve_status_by_quantity(quantity, status=None):
+        """Tự động đặt trạng thái theo số lượng tồn kho"""
+        quantity = int(quantity or 0)
+        if quantity <= 0:
+            return "Hết hàng"
+        if status == "Hết hàng":
+            return "Còn hàng"
+        return status or "Còn hàng"
+
+    @staticmethod
+    def sync_status_with_stock(product_id, cursor=None):
+        """Đồng bộ trạng thái sản phẩm sau khi thay đổi tồn kho"""
+        sql = """
+            UPDATE G9_SanPham
+            SET G9_TrangThai = CASE
+                WHEN G9_SoLuongTon <= 0 THEN N'Hết hàng'
+                WHEN G9_TrangThai = N'Hết hàng' THEN N'Còn hàng'
+                ELSE G9_TrangThai
+            END
+            WHERE G9_MaSanPham = ?
+        """
+
+        if cursor is not None:
+            cursor.execute(sql, (product_id,))
+            return True
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql, (product_id,))
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
     def create_product(data):
         """Tạo sản phẩm mới"""
         conn = get_connection()
         cursor = conn.cursor()
 
         try:
+            quantity = int(data.get("quantity") or 0)
+            status = ProductModel.resolve_status_by_quantity(
+                quantity,
+                data.get("status", "Còn hàng")
+            )
+
             cursor.execute("""
                 INSERT INTO G9_SanPham
                 (
@@ -95,10 +141,10 @@ class ProductModel:
                 data.get("category_id"),
                 data.get("material"),
                 data.get("price"),
-                data.get("quantity"),
+                quantity,
                 data.get("image"),
                 data.get("description"),
-                data.get("status", "Còn hàng")
+                status
             ))
 
             conn.commit()
@@ -117,6 +163,12 @@ class ProductModel:
         cursor = conn.cursor()
 
         try:
+            quantity = int(data.get("quantity") or 0)
+            status = ProductModel.resolve_status_by_quantity(
+                quantity,
+                data.get("status", "Còn hàng")
+            )
+
             cursor.execute("""
                 UPDATE G9_SanPham
                 SET 
@@ -134,12 +186,34 @@ class ProductModel:
                 data.get("category_id"),
                 data.get("material"),
                 data.get("price"),
-                data.get("quantity"),
+                quantity,
                 data.get("image"),
                 data.get("description"),
-                data.get("status"),
+                status,
                 product_id
             ))
+
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def update_product_status(product_id, status):
+        """Cập nhật trạng thái sản phẩm"""
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                UPDATE G9_SanPham
+                SET G9_TrangThai = ?
+                WHERE G9_MaSanPham = ?
+            """, (status, product_id))
 
             conn.commit()
             return True

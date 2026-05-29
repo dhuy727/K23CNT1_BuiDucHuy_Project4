@@ -27,7 +27,8 @@ from routes import (
     news_bp,
     gold_bp,
     promotion_bp,
-    upload_bp
+    upload_bp,
+    paypal_bp
 )
 
 # ==============================
@@ -99,6 +100,7 @@ app.register_blueprint(news_bp, url_prefix="/api/news")
 app.register_blueprint(gold_bp, url_prefix="/api/gold")
 app.register_blueprint(promotion_bp, url_prefix="/api/promotions")
 app.register_blueprint(upload_bp, url_prefix="/api/upload")
+app.register_blueprint(paypal_bp,url_prefix='/api/paypal')
 
 
 # ==============================

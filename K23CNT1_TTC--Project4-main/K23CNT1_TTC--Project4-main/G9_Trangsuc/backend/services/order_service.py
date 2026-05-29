@@ -7,10 +7,12 @@
 # - Validate đơn hàng
 # ==============================
 
+
 from datetime import datetime
 from models.order_model import OrderModel
 from models.cart_model import CartModel
 from services.cart_service import CartService
+from utils.request_validator import ValidationError
 
 
 class OrderService:
@@ -44,7 +46,7 @@ class OrderService:
             errors.append(message)
 
         if errors:
-            raise ValueError(", ".join(errors))
+            raise ValidationError(", ".join(errors))
 
         return True
 

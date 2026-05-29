@@ -33,14 +33,21 @@ async function loadAdminProducts() {
                     <td>
                         <img src="${escapeHtml(getImageUrl(product.image))}"
                              width="60"
-                             style="height:60px; object-fit:cover;">
+                             class="admin-table-thumb">
                     </td>
 
                     <td>${product.name}</td>
                     <td>${Number(product.price).toLocaleString()} VNĐ</td>
                     <td>${product.quantity}</td>
                     <td>${product.category_name || ""}</td>
-                    <td>${product.status || ""}</td>
+                    <td>
+                        <select class="form-select form-select-sm"
+                                onchange="updateProductStatus(${product.id}, this.value)">
+                            <option value="Còn hàng" ${product.status === "Còn hàng" ? "selected" : ""}>Còn hàng</option>
+                            <option value="Hết hàng" ${product.status === "Hết hàng" ? "selected" : ""}>Hết hàng</option>
+                            <option value="Ngừng bán" ${product.status === "Ngừng bán" ? "selected" : ""}>Ngừng bán</option>
+                        </select>
+                    </td>
 
                     <td>
                         <button class="btn btn-sm btn-warning"
@@ -94,6 +101,20 @@ async function loadCategoriesToSelect() {
 }
 
 
+// ==============================
+// CẬP NHẬT TRẠNG THÁI SẢN PHẨM
+// ==============================
+async function updateProductStatus(productId, status) {
+    const result = await apiFetch(`${API_BASE_URL}/products/status/${productId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: status })
+    });
+
+    alert(result.message || "Cập nhật trạng thái thất bại");
+    loadAdminProducts();
+}
+
+
 // CHUYỂN HƯỚNG ĐẾN TRANG CHỈNH SỬA
 // ==============================
 function editProduct(product) {
@@ -120,5 +141,5 @@ async function deleteProduct(id) {
 // ==============================
 // KHỞI CHẠY
 // ==============================
-loadAdminProducts
+loadAdminProducts();
 loadCategoriesToSelect();

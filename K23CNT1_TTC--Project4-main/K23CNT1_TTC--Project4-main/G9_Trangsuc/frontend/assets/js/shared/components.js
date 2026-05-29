@@ -48,6 +48,11 @@
                         </li>
                         ${navLink('Tin tức', 'news.html', activePage === 'news')}
                         ${navLink('Giá vàng', 'gold-price.html', activePage === 'gold')}
+                        <li class="nav-item d-none" id="g9AdminNavItem">
+                            <a class="nav-link" href="../admin/dashboard.html">
+                                <i class="fa-solid fa-gauge-high me-1"></i>Quản trị
+                            </a>
+                        </li>
                     </ul>
                     <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2">
                         <a class="btn btn-outline-warning btn-sm" href="cart.html">
@@ -105,9 +110,15 @@
             </li>
         `;
     }
+    function updateAdminNavLink(user) {
+        const adminNavItem = document.getElementById('g9AdminNavItem');
+        if (!adminNavItem) return;
+        adminNavItem.classList.toggle('d-none', !isAdminUser(user));
+    }
     function renderAuthArea() {
         const user = getCurrentUser();
         const el = document.getElementById('authArea');
+        updateAdminNavLink(user);
         if (!el) return;
         
         if (!user) {
@@ -130,6 +141,7 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="min-width: 180px;">
                     <li><a class="dropdown-item" href="profile.html"><i class="fa-solid fa-user me-2"></i>Tài khoản</a></li>
                     <li><a class="dropdown-item" href="orders.html"><i class="fa-solid fa-box me-2"></i>Đơn hàng</a></li>
+                    ${isAdminUser(user) ? '<li><a class="dropdown-item" href="../admin/dashboard.html"><i class="fa-solid fa-gauge-high me-2"></i>Trang quản trị</a></li>' : ''}
                     <li><hr class="dropdown-divider"></li>
                     <li><button class="dropdown-item text-danger" type="button" id="logoutBtn"><i class="fa-solid fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
                 </ul>
