@@ -24,6 +24,7 @@ class CartModel:
                 sp.G9_TenSanPham AS product_name,
                 sp.G9_HinhAnhChinh AS image,
                 ct.G9_SoLuong AS quantity,
+                sp.G9_SoLuongTon AS stock_quantity,
                 ct.G9_DonGia AS price,
                 ct.G9_SoLuong * ct.G9_DonGia AS total
             FROM G9_GioHang gh
@@ -107,6 +108,25 @@ class CartModel:
         except Exception as e:
             conn.rollback()
             raise e
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def get_cart_line_product_id(cart_detail_id):
+        """Lấy mã sản phẩm từ dòng chi tiết giỏ hàng"""
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT G9_MaSanPham
+                FROM G9_ChiTietGioHang
+                WHERE G9_MaChiTiet = ?
+            """, (cart_detail_id,))
+            row = cursor.fetchone()
+            if not row:
+                raise ValueError("Sản phẩm không tồn tại trong giỏ hàng")
+            return row[0]
         finally:
             cursor.close()
             conn.close()

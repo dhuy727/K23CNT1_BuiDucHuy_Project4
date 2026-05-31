@@ -48,6 +48,34 @@ class CartService:
     # KIỂM TRA HÀNG CÓ SẴN TRONG GIỎ KHÔNG
     # ==============================
     @staticmethod
+    def add_to_cart(user_id, product_id, quantity):
+        """Thêm vào giỏ sau khi kiểm tra tồn kho (cộng dồn số lượng đã có)."""
+        quantity = int(quantity)
+        if quantity < 1:
+            raise ValueError("Số lượng phải lớn hơn hoặc bằng 1")
+
+        cart_items = CartModel.get_cart_by_user(user_id)
+        current_in_cart = 0
+        for item in cart_items:
+            if item.get("product_id") == product_id:
+                current_in_cart = int(item.get("quantity", 0))
+                break
+
+        ProductService.check_stock(product_id, current_in_cart + quantity)
+        return CartModel.add_to_cart(user_id, product_id, quantity)
+
+    @staticmethod
+    def update_cart_item(cart_detail_id, quantity):
+        """Cập nhật số lượng sau khi kiểm tra tồn kho."""
+        quantity = int(quantity)
+        if quantity < 1:
+            raise ValueError("Số lượng phải lớn hơn hoặc bằng 1")
+
+        product_id = CartModel.get_cart_line_product_id(cart_detail_id)
+        ProductService.check_stock(product_id, quantity)
+        return CartModel.update_cart_item(cart_detail_id, quantity)
+
+    @staticmethod
     def validate_cart_availability(user_id):
         """
         Kiểm tra tất cả sản phẩm trong giỏ còn hàng không

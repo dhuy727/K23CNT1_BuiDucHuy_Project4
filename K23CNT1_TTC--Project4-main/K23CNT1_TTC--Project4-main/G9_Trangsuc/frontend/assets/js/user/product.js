@@ -704,14 +704,27 @@ async function loadProducts() {
     }
 }
 
+function registerProductsForCart(list) {
+    if (!Array.isArray(list) || !list.length) return;
+    const byId = new Map(products.map((item) => [Number(item.id), item]));
+    list.forEach((item) => {
+        if (item && item.id != null) {
+            byId.set(Number(item.id), item);
+        }
+    });
+    products = Array.from(byId.values());
+}
+
 async function addToCart(productId) {
     const user = getCurrentUser();
     const product = products.find((item) => Number(item.id) === Number(productId));
-    const stock = getProductStockState(product || {});
 
-    if (stock.outOfStock) {
-        showToast(`Sản phẩm đã ${stock.label.toLowerCase()}.`, "error");
-        return;
+    if (product) {
+        const stock = getProductStockState(product);
+        if (stock.outOfStock) {
+            showToast(`Sản phẩm đã ${stock.label.toLowerCase()}.`, "error");
+            return;
+        }
     }
 
     if (!user?.id) {
@@ -777,4 +790,6 @@ async function init() {
 
 document.addEventListener("DOMContentLoaded", init);
 window.addToCart = addToCart;
+window.registerProductsForCart = registerProductsForCart;
+window.getProductStockState = getProductStockState;
 })();

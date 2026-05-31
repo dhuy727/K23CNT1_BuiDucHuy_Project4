@@ -9,6 +9,7 @@
 
 from flask import Blueprint, jsonify, request
 from models.cart_model import CartModel
+from services.cart_service import CartService
 from middleware import require_auth, is_current_user
 from utils.request_validator import ValidationError, validate_cart_payload, validate_update_cart_payload
 
@@ -41,7 +42,6 @@ def get_cart(user_id):
             "success": False,
             "message": f"Lỗi khi lấy giỏ hàng: {str(e)}"
         }), 500
-@require_auth
 
 
 # ==============================
@@ -65,7 +65,7 @@ def add_to_cart():
                 "message": "Bạn không có quyền thêm vào giỏ hàng này"
             }), 403
 
-        CartModel.add_to_cart(user_id, product_id, quantity)
+        CartService.add_to_cart(user_id, product_id, quantity)
         
         return jsonify({
             "success": True,
@@ -80,7 +80,7 @@ def add_to_cart():
         return jsonify({
             "success": False,
             "message": str(e)
-        }), 404
+        }), 400
     except Exception as e:
         return jsonify({
             "success": False,
@@ -99,13 +99,18 @@ def update_cart_item(cart_detail_id):
         validate_update_cart_payload(data)
         quantity = int(data.get("quantity", 1))
 
-        CartModel.update_cart_item(cart_detail_id, quantity)
+        CartService.update_cart_item(cart_detail_id, quantity)
         
         return jsonify({
             "success": True,
             "message": "Cập nhật giỏ hàng thành công"
         })
     except ValidationError as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 400
+    except ValueError as e:
         return jsonify({
             "success": False,
             "message": str(e)

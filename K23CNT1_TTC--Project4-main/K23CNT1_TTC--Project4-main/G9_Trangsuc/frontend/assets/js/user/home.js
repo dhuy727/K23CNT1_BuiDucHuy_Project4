@@ -81,7 +81,15 @@ async function loadFeaturedProducts() {
             return;
         }
 
-        const cardsHtml = featured.map(product => `
+        if (typeof window.registerProductsForCart === 'function') {
+            window.registerProductsForCart(featured);
+        }
+
+        const cardsHtml = featured.map(product => {
+            const stock = typeof window.getProductStockState === 'function'
+                ? window.getProductStockState(product)
+                : { outOfStock: Number(product.quantity || 0) <= 0, label: 'Hết hàng' };
+            return `
             <div class="featured-carousel-card fade-up">
                 <div class="card product-card h-100">
                     <div class="position-relative overflow-hidden">
@@ -94,12 +102,17 @@ async function loadFeaturedProducts() {
                         <div class="product-price mb-3">${formatMoney(product.price)}</div>
                         <div class="d-flex gap-2 mt-auto flex-wrap">
                             <a href="product-detail.html?id=${product.id}" class="btn btn-outline-gold flex-grow-1">Xem chi tiết</a>
-                            <button class="btn btn-gold" type="button" onclick="addToCart(${product.id})">+ Giỏ</button>
+                            ${stock.outOfStock ? `
+                                <button type="button" class="btn btn-secondary" disabled title="${escapeHtml(stock.label)}">${escapeHtml(stock.label)}</button>
+                            ` : `
+                                <button class="btn btn-gold" type="button" onclick="addToCart(${Number(product.id)})">+ Giỏ</button>
+                            `}
                         </div>
                     </div>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
 
         box.innerHTML = `
             <div class="featured-carousel">

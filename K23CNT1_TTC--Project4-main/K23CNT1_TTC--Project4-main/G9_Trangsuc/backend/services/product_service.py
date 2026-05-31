@@ -78,7 +78,11 @@ class ProductService:
         available_quantity = product.get("quantity", 0)
 
         if quantity > available_quantity:
-            raise ValueError(f"Chỉ còn {available_quantity} sản phẩm trong kho")
+            if available_quantity <= 0:
+                raise ValueError("Sản phẩm đã hết hàng trong kho")
+            raise ValueError(
+                f"Kho không còn đủ hàng. Chỉ còn {available_quantity} sản phẩm."
+            )
 
         return True
 

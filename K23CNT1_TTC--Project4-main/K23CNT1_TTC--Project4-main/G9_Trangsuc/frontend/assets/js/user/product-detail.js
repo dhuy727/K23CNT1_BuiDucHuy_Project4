@@ -278,7 +278,12 @@ async function addToCartFromDetail() {
         return;
     }
     if (quantity > productStock) {
-        showToast(`Không thể thêm. Chỉ còn ${productStock} sản phẩm trong kho.`, 'error');
+        showToast(
+            productStock <= 0
+                ? 'Kho không còn đủ hàng. Sản phẩm đã hết hàng.'
+                : `Kho không còn đủ hàng. Chỉ còn ${productStock} sản phẩm.`,
+            'error'
+        );
         return;
     }
 

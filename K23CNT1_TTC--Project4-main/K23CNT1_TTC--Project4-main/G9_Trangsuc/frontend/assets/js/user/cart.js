@@ -22,7 +22,10 @@ async function loadCart() {
         let grandTotal = 0;
         cartBody.innerHTML = items.map(item => {
             grandTotal += Number(item.total || 0);
-            return `<tr><td><img src="${escapeHtml(getImageUrl(item.image))}" width="72" height="72" style="object-fit:cover; border-radius:16px;" alt="${escapeHtml(item.product_name)}"></td><td><div class="fw-bold">${escapeHtml(item.product_name)}</div><div class="small text-muted">Mã: ${item.product_id || ''}</div></td><td>${formatMoney(item.price)}</td><td style="max-width: 130px;"><input type="number" min="1" value="${item.quantity}" class="form-control" onchange="updateCart(${item.cart_detail_id}, this.value)"></td><td class="fw-bold text-gold">${formatMoney(item.total)}</td><td><button class="btn btn-outline-danger btn-sm" onclick="deleteCartItem(${item.cart_detail_id})">Xóa</button></td></tr>`;
+            const stockQty = Math.max(0, Number(item.stock_quantity ?? 0));
+            const maxQty = stockQty > 0 ? stockQty : 1;
+            const atMax = Number(item.quantity) >= maxQty;
+            return `<tr><td><img src="${escapeHtml(getImageUrl(item.image))}" width="72" height="72" style="object-fit:cover; border-radius:16px;" alt="${escapeHtml(item.product_name)}"></td><td><div class="fw-bold">${escapeHtml(item.product_name)}</div><div class="small text-muted">Mã: ${item.product_id || ''}</div></td><td>${formatMoney(item.price)}</td><td style="max-width: 150px;"><input type="number" min="1" max="${maxQty}" value="${item.quantity}" class="form-control" data-cart-detail-id="${item.cart_detail_id}" data-stock-max="${maxQty}" onchange="updateCart(${item.cart_detail_id}, this.value, ${maxQty})"><div class="small ${atMax ? 'text-danger' : 'text-muted'} mt-1">Kho: ${stockQty} sản phẩm${atMax ? ' (đã đạt tối đa)' : ''}</div></td><td class="fw-bold text-gold">${formatMoney(item.total)}</td><td><button class="btn btn-outline-danger btn-sm" onclick="deleteCartItem(${item.cart_detail_id})">Xóa</button></td></tr>`;
         }).join('');
         totalBox.innerHTML = `<div class='cart-summary-box d-inline-block mt-4'>Tổng tiền: <span class='text-gold fw-bold fs-4'>${formatMoney(grandTotal)}</span></div>`;
     } catch (error) {
@@ -31,13 +34,34 @@ async function loadCart() {
     }
 }
 
-async function updateCart(cartDetailId, quantity) {
+async function updateCart(cartDetailId, quantity, stockMax) {
     const qty = Number(quantity);
-    if (!qty || qty < 1) { showToast('Số lượng phải lớn hơn hoặc bằng 1', 'error'); await loadCart(); return; }
+    const maxStock = Number(stockMax);
+    if (!qty || qty < 1) {
+        showToast('Số lượng phải lớn hơn hoặc bằng 1', 'error');
+        await loadCart();
+        return;
+    }
+    if (maxStock > 0 && qty > maxStock) {
+        showToast(`Kho không còn đủ hàng. Chỉ còn ${maxStock} sản phẩm.`, 'error');
+        await loadCart();
+        return;
+    }
     try {
         const result = await apiFetch(`${API_BASE_URL}/cart/update/${cartDetailId}`, { method: 'PUT', body: JSON.stringify({ quantity: qty }) });
-        if (result.success) { showToast(result.message || 'Đã cập nhật giỏ hàng', 'success'); dispatchCartChanged(); await loadCart(); } else { showToast(result.message || 'Không thể cập nhật giỏ hàng', 'error'); await loadCart(); }
-    } catch (error) { console.error(error); showToast('Lỗi khi cập nhật giỏ hàng', 'error'); }
+        if (result.success) {
+            showToast(result.message || 'Đã cập nhật giỏ hàng', 'success');
+            dispatchCartChanged();
+            await loadCart();
+        } else {
+            showToast(result.message || 'Không thể cập nhật giỏ hàng', 'error');
+            await loadCart();
+        }
+    } catch (error) {
+        console.error(error);
+        showToast('Lỗi khi cập nhật giỏ hàng', 'error');
+        await loadCart();
+    }
 }
 
 async function deleteCartItem(cartDetailId) {
