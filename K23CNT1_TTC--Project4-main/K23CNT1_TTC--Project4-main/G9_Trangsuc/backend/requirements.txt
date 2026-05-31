@@ -4,3 +4,4 @@ python-dotenv
 pyodbc
 PyJWT
 requests
+Authlib

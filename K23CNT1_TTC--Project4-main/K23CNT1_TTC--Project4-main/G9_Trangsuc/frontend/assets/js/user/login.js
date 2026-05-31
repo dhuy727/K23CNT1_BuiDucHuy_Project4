@@ -1,5 +1,26 @@
 
 const loginForm = document.getElementById('loginForm');
+const googleLoginBtn = document.getElementById('google-login');
+
+function getGoogleLoginUrl() {
+    const apiBase = window.API_BASE_URL || 'http://127.0.0.1:5000/api';
+    return `${apiBase}/auth/login/google`;
+}
+
+if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+        window.location.href = getGoogleLoginUrl();
+    });
+}
+
+(function showGoogleLoginError() {
+    const params = new URLSearchParams(window.location.search);
+    const message = params.get('message') || (params.get('google_error') ? 'Đăng nhập Google thất bại' : '');
+    if (message && typeof showToast === 'function') {
+        showToast(decodeURIComponent(message), 'error');
+    }
+})();
+
 if (loginForm) {
     loginForm.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -9,9 +30,7 @@ if (loginForm) {
         const loginUrl = `${apiBase}/auth/login`;
 
         try {
-            console.debug('Login URL:', loginUrl, 'username:', username);
             const result = await apiFetch(loginUrl, { method: 'POST', body: JSON.stringify({ username, password }) });
-            console.debug('Login result:', result);
             if (result && result.success) {
                 saveToken(result.token);
                 saveUser(result.user);

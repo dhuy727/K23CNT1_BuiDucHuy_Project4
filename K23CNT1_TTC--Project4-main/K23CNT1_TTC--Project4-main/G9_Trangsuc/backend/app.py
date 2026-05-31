@@ -11,25 +11,8 @@ from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 
-# ==============================
-# IMPORT ROUTES
-# ==============================
-from routes import (
-    auth_bp,
-    product_bp,
-    category_bp,
-    review_bp,
-    cart_bp,
-    order_bp,
-    user_bp,
-    admin_bp,
-    dashboard_bp,
-    news_bp,
-    gold_bp,
-    promotion_bp,
-    upload_bp,
-    paypal_bp
-)
+from config import Config
+from extensions.google_oauth import init_google_oauth, google_oauth_enabled
 
 # ==============================
 # KHỞI TẠO APP
@@ -49,6 +32,32 @@ app = Flask(
 # CHO PHÉP FRONTEND GỌI API
 # ==============================
 CORS(app)
+
+app.config["SECRET_KEY"] = Config.SECRET_KEY or "G9_SECRET_KEY"
+app.config["FRONTEND_URL"] = Config.FRONTEND_URL
+init_google_oauth(app)
+if not google_oauth_enabled():
+    print("[Google OAuth] CANH BAO: Dang nhap Google se khong hoat dong")
+
+# ==============================
+# IMPORT ROUTES (sau khi khởi tạo OAuth)
+# ==============================
+from routes import (
+    auth_bp,
+    product_bp,
+    category_bp,
+    review_bp,
+    cart_bp,
+    order_bp,
+    user_bp,
+    admin_bp,
+    dashboard_bp,
+    news_bp,
+    gold_bp,
+    promotion_bp,
+    upload_bp,
+    paypal_bp
+)
 
 # ==============================
 # ROUTE TEST SERVER
@@ -108,7 +117,7 @@ app.register_blueprint(paypal_bp,url_prefix='/api/paypal')
 # ==============================
 if __name__ == "__main__":
     print("===================================")
-    print(" G9 TRANG SỨC SERVER ĐANG CHẠY ")
+    print(" G9 TRANG SUC SERVER DANG CHAY ")
     print(" http://127.0.0.1:5000")
     print("===================================")
 

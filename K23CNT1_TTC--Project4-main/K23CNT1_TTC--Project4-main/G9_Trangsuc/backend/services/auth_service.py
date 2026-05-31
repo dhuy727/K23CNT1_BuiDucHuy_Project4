@@ -60,3 +60,27 @@ class AuthService:
     def generate_otp():
         """Tạo OTP 6 chữ số cho xác minh 2FA"""
         return ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+
+    @staticmethod
+    def find_or_create_google_user(email, full_name):
+        """Tìm user theo email hoặc tạo mới khi đăng nhập Google."""
+        from models.auth_model import AuthModel
+
+        user = AuthModel.get_user_by_email(email)
+        if user:
+            return user
+
+        base_username = (email.split("@")[0] or "user").replace(".", "_")[:40]
+        username = base_username
+        suffix = 1
+        while AuthModel.get_user_by_username(username):
+            username = f"{base_username}{suffix}"
+            suffix += 1
+
+        random_password = AuthService.hash_password(secrets.token_urlsafe(24))
+        return AuthModel.create_user(
+            full_name or username,
+            username,
+            random_password,
+            email=email,
+        )
