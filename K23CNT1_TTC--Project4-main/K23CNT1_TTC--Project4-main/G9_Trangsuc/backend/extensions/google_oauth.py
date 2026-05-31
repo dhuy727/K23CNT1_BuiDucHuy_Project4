@@ -23,7 +23,7 @@ def init_google_oauth(app):
         server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
         client_kwargs={"scope": "openid email profile"},
     )
-    print("[Google OAuth] Da khoi tao thanh cong")
+
 
 
 def get_google_client():

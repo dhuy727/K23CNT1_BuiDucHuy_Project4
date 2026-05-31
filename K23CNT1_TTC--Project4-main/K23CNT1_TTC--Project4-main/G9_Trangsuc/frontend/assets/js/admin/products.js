@@ -14,12 +14,15 @@ checkAdmin();
 // ==============================
 // STATE: Lưu trữ dữ liệu & bộ lọc
 // ==============================
+const ADMIN_PAGE_SIZE = 10;
+
 let allProducts = [];
 let adminFilterState = {
     keyword: "",
     category: "all",
     status: "all",
-    sort: "default"
+    sort: "default",
+    page: 1,
 };
 let adminDebounceTimer = null;
 
@@ -53,47 +56,46 @@ async function loadAdminProducts() {
 
 
 // ==============================
-// LỌC & HIỂN THỊ SẢN PHẨM
+// LỌC SẢN PHẨM
 // ==============================
-function renderFilteredProducts() {
-    const tbody = document.getElementById("productTable");
+function getFilteredAdminProducts() {
     const keyword = adminFilterState.keyword.trim().toLowerCase();
     const category = adminFilterState.category;
     const status = adminFilterState.status;
     const sort = adminFilterState.sort;
 
-    // Lọc sản phẩm
-    let filtered = allProducts.filter(product => {
-        // Lọc theo từ khóa
+    let filtered = allProducts.filter((product) => {
         if (keyword) {
             const searchable = [
                 product.name,
                 product.category_name,
                 product.material,
                 product.description,
-                String(product.id)
-            ].filter(Boolean).join(" ").toLowerCase();
+                String(product.id),
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
 
             if (!searchable.includes(keyword)) return false;
         }
 
-        // Lọc theo danh mục
         if (category !== "all") {
-            if (String(product.category_id) !== category &&
-                String(product.category_name || "").toLowerCase() !== category.toLowerCase()) {
+            if (
+                String(product.category_id) !== category &&
+                String(product.category_name || "").toLowerCase() !== category.toLowerCase()
+            ) {
                 return false;
             }
         }
 
-        // Lọc theo trạng thái
-        if (status !== "all") {
-            if (product.status !== status) return false;
+        if (status !== "all" && product.status !== status) {
+            return false;
         }
 
         return true;
     });
 
-    // Sắp xếp
     switch (sort) {
         case "price-asc":
             filtered.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
@@ -116,11 +118,140 @@ function renderFilteredProducts() {
             break;
     }
 
-    // Cập nhật số kết quả
+    return filtered;
+}
+
+function getAdminTotalPages(itemCount) {
+    return Math.max(1, Math.ceil(itemCount / ADMIN_PAGE_SIZE));
+}
+
+function clampAdminCurrentPage(filteredCount) {
+    const totalPages = getAdminTotalPages(filteredCount);
+    if (adminFilterState.page > totalPages) {
+        adminFilterState.page = totalPages;
+    }
+    if (adminFilterState.page < 1) {
+        adminFilterState.page = 1;
+    }
+}
+
+function resetAdminToFirstPage() {
+    adminFilterState.page = 1;
+}
+
+function getAdminPaginationWindow(current, total, maxVisible = 5) {
+    if (total <= maxVisible) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = start + maxVisible - 1;
+
+    if (end > total) {
+        end = total;
+        start = end - maxVisible + 1;
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+function renderAdminPagination(totalItems) {
+    const nav = document.getElementById("adminProductPagination");
+    if (!nav) return;
+
+    const totalPages = getAdminTotalPages(totalItems);
+
+    if (totalItems <= ADMIN_PAGE_SIZE) {
+        nav.hidden = true;
+        nav.innerHTML = "";
+        return;
+    }
+
+    const currentPage = adminFilterState.page;
+    const startIndex = (currentPage - 1) * ADMIN_PAGE_SIZE + 1;
+    const endIndex = Math.min(currentPage * ADMIN_PAGE_SIZE, totalItems);
+    const pages = getAdminPaginationWindow(currentPage, totalPages);
+
+    const pageItems = pages
+        .map(
+            (pageNum) => `
+        <li class="page-item${pageNum === currentPage ? " active" : ""}">
+            <button type="button"
+                    class="page-link"
+                    ${pageNum === currentPage ? 'aria-current="page"' : ""}
+                    data-page="${pageNum}">
+                ${pageNum}
+            </button>
+        </li>
+    `
+        )
+        .join("");
+
+    nav.hidden = false;
+    nav.innerHTML = `
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <p class="admin-product-pagination-summary mb-0">
+                Hiển thị ${startIndex}–${endIndex} / ${totalItems} sản phẩm
+            </p>
+            <ul class="pagination mb-0">
+                <li class="page-item${currentPage <= 1 ? " disabled" : ""}">
+                    <button type="button" class="page-link" data-page="${currentPage - 1}" aria-label="Trang trước"
+                        ${currentPage <= 1 ? "disabled" : ""}>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </li>
+                ${pageItems}
+                <li class="page-item${currentPage >= totalPages ? " disabled" : ""}">
+                    <button type="button" class="page-link" data-page="${currentPage + 1}" aria-label="Trang sau"
+                        ${currentPage >= totalPages ? "disabled" : ""}>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    `;
+
+    nav.querySelectorAll("[data-page]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            if (btn.disabled) return;
+            const target = parseInt(btn.dataset.page, 10);
+            if (!Number.isFinite(target)) return;
+            goToAdminPage(target);
+        });
+    });
+}
+
+function goToAdminPage(page, { scroll = true } = {}) {
+    const filtered = getFilteredAdminProducts();
+    const totalPages = getAdminTotalPages(filtered.length);
+    const nextPage = Math.min(Math.max(1, page), totalPages);
+
+    if (nextPage === adminFilterState.page) return;
+
+    adminFilterState.page = nextPage;
+    renderFilteredProducts({ scroll });
+}
+
+// ==============================
+// LỌC & HIỂN THỊ SẢN PHẨM
+// ==============================
+function renderFilteredProducts(options = {}) {
+    const { scroll = false } = options;
+    const tbody = document.getElementById("productTable");
+    const keyword = adminFilterState.keyword.trim().toLowerCase();
+
+    const filtered = getFilteredAdminProducts();
+    clampAdminCurrentPage(filtered.length);
+
     updateResultCount(filtered.length, allProducts.length);
 
-    // Render bảng
     if (filtered.length === 0) {
+        const paginationNav = document.getElementById("adminProductPagination");
+        if (paginationNav) {
+            paginationNav.hidden = true;
+            paginationNav.innerHTML = "";
+        }
+
         tbody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center py-5">
@@ -132,9 +263,12 @@ function renderFilteredProducts() {
         return;
     }
 
+    const start = (adminFilterState.page - 1) * ADMIN_PAGE_SIZE;
+    const pageProducts = filtered.slice(start, start + ADMIN_PAGE_SIZE);
+
     tbody.innerHTML = "";
 
-    filtered.forEach((product, index) => {
+    pageProducts.forEach((product, index) => {
         tbody.innerHTML += `
             <tr class="admin-row-highlight" style="animation-delay: ${Math.min(index * 0.03, 0.3)}s">
                 <td>${product.id}</td>
@@ -172,6 +306,15 @@ function renderFilteredProducts() {
             </tr>
         `;
     });
+
+    renderAdminPagination(filtered.length);
+
+    if (scroll) {
+        const target = document.getElementById("adminProductPagination") ||
+            document.querySelector(".table-responsive") ||
+            tbody;
+        target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
 }
 
 
@@ -259,7 +402,8 @@ function bindAdminFilters() {
             clearTimeout(adminDebounceTimer);
             adminDebounceTimer = setTimeout(() => {
                 adminFilterState.keyword = searchInput.value.trim();
-                renderFilteredProducts();
+                resetAdminToFirstPage();
+                renderFilteredProducts({ scroll: true });
             }, 200);
         });
     }
@@ -268,7 +412,8 @@ function bindAdminFilters() {
     if (categoryFilter) {
         categoryFilter.addEventListener("change", () => {
             adminFilterState.category = categoryFilter.value;
-            renderFilteredProducts();
+            resetAdminToFirstPage();
+            renderFilteredProducts({ scroll: true });
         });
     }
 
@@ -276,7 +421,8 @@ function bindAdminFilters() {
     if (statusFilter) {
         statusFilter.addEventListener("change", () => {
             adminFilterState.status = statusFilter.value;
-            renderFilteredProducts();
+            resetAdminToFirstPage();
+            renderFilteredProducts({ scroll: true });
         });
     }
 
@@ -284,21 +430,28 @@ function bindAdminFilters() {
     if (sortFilter) {
         sortFilter.addEventListener("change", () => {
             adminFilterState.sort = sortFilter.value;
-            renderFilteredProducts();
+            resetAdminToFirstPage();
+            renderFilteredProducts({ scroll: true });
         });
     }
 
     // Đặt lại bộ lọc
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
-            adminFilterState = { keyword: "", category: "all", status: "all", sort: "default" };
+            adminFilterState = {
+                keyword: "",
+                category: "all",
+                status: "all",
+                sort: "default",
+                page: 1,
+            };
 
             if (searchInput) searchInput.value = "";
             if (categoryFilter) categoryFilter.value = "all";
             if (statusFilter) statusFilter.value = "all";
             if (sortFilter) sortFilter.value = "default";
 
-            renderFilteredProducts();
+            renderFilteredProducts({ scroll: true });
         });
     }
 }

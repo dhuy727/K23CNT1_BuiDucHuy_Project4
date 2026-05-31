@@ -16,11 +16,14 @@ let categoryDescendantsMap = new Map();
 let categoryNameToIdMap = new Map();
 let debounceTimer = null;
 
+const PAGE_SIZE = 9;
+
 const state = {
     keyword: "",
     priceFilter: "all",
     ratingFilter: "all",
     sort: "default",
+    page: 1,
 };
 
 function apiFetchSafe(url, options = {}) {
@@ -271,6 +274,7 @@ function updateQueryString() {
     if (state.priceFilter && state.priceFilter !== "all") params.set("price", state.priceFilter);
     if (state.ratingFilter && state.ratingFilter !== "all") params.set("rating", state.ratingFilter);
     if (state.sort && state.sort !== "default") params.set("sort", state.sort);
+    if (state.page > 1) params.set("page", String(state.page));
 
     const qs = params.toString();
     const url = `${window.location.pathname}${qs ? "?" + qs : ""}`;
@@ -299,6 +303,8 @@ function readQueryString() {
     state.priceFilter = params.get("price") || "all";
     state.ratingFilter = params.get("rating") || "all";
     state.sort = params.get("sort") || "default";
+    const pageParam = parseInt(params.get("page") || "1", 10);
+    state.page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
     if (el.searchInput) el.searchInput.value = state.keyword;
     if (el.priceFilter) el.priceFilter.value = state.priceFilter;
@@ -464,12 +470,122 @@ function applyFilters() {
     }
 }
 
-function renderProducts() {
+function getTotalPages(itemCount) {
+    return Math.max(1, Math.ceil(itemCount / PAGE_SIZE));
+}
+
+function clampCurrentPage() {
+    const totalPages = getTotalPages(filteredProducts.length);
+    if (state.page > totalPages) {
+        state.page = totalPages;
+    }
+    if (state.page < 1) {
+        state.page = 1;
+    }
+}
+
+function resetToFirstPage() {
+    state.page = 1;
+}
+
+function goToPage(page, { scroll = true } = {}) {
+    const totalPages = getTotalPages(filteredProducts.length);
+    const nextPage = Math.min(Math.max(1, page), totalPages);
+    if (nextPage === state.page) return;
+
+    state.page = nextPage;
+    updateQueryString();
+    renderProducts({ scroll });
+}
+
+function getPaginationWindow(current, total, maxVisible = 5) {
+    if (total <= maxVisible) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = start + maxVisible - 1;
+
+    if (end > total) {
+        end = total;
+        start = end - maxVisible + 1;
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+function renderPagination(totalItems) {
+    if (!el.productPagination) return;
+
+    const totalPages = getTotalPages(totalItems);
+
+    if (totalItems <= PAGE_SIZE) {
+        el.productPagination.hidden = true;
+        el.productPagination.innerHTML = "";
+        return;
+    }
+
+    const startIndex = (state.page - 1) * PAGE_SIZE + 1;
+    const endIndex = Math.min(state.page * PAGE_SIZE, totalItems);
+    const pages = getPaginationWindow(state.page, totalPages);
+
+    const pageItems = pages.map((pageNum) => `
+        <li class="page-item${pageNum === state.page ? " active" : ""}">
+            <button type="button"
+                    class="page-link"
+                    ${pageNum === state.page ? 'aria-current="page"' : ""}
+                    data-page="${pageNum}">
+                ${pageNum}
+            </button>
+        </li>
+    `).join("");
+
+    el.productPagination.hidden = false;
+    el.productPagination.innerHTML = `
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <p class="product-pagination-summary mb-0">
+                Hiển thị ${startIndex}–${endIndex} / ${totalItems} sản phẩm
+            </p>
+            <ul class="pagination mb-0">
+                <li class="page-item${state.page <= 1 ? " disabled" : ""}">
+                    <button type="button" class="page-link" data-page="${state.page - 1}" aria-label="Trang trước"
+                        ${state.page <= 1 ? "disabled" : ""}>
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                </li>
+                ${pageItems}
+                <li class="page-item${state.page >= totalPages ? " disabled" : ""}">
+                    <button type="button" class="page-link" data-page="${state.page + 1}" aria-label="Trang sau"
+                        ${state.page >= totalPages ? "disabled" : ""}>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    `;
+
+    el.productPagination.querySelectorAll("[data-page]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            if (btn.disabled) return;
+            const target = parseInt(btn.dataset.page, 10);
+            if (!Number.isFinite(target)) return;
+            goToPage(target);
+        });
+    });
+}
+
+function renderProducts(options = {}) {
+    const { scroll = false } = options;
     if (!el.productList) return;
 
     applyFilters();
+    clampCurrentPage();
 
     if (!filteredProducts.length) {
+        if (el.productPagination) {
+            el.productPagination.hidden = true;
+            el.productPagination.innerHTML = "";
+        }
         el.productList.innerHTML = `
             <div class="col-12">
                 <div class="surface-card text-center p-5 fade-up">
@@ -482,7 +598,11 @@ function renderProducts() {
         return;
     }
 
-    el.productList.innerHTML = filteredProducts.map((product, index) => {
+    const totalItems = filteredProducts.length;
+    const start = (state.page - 1) * PAGE_SIZE;
+    const pageProducts = filteredProducts.slice(start, start + PAGE_SIZE);
+
+    el.productList.innerHTML = pageProducts.map((product, index) => {
         const p = normalizeProduct(product);
         const stock = getProductStockState(p);
 
@@ -562,6 +682,13 @@ function renderProducts() {
             </div>
         `;
     }).join("");
+
+    renderPagination(totalItems);
+
+    if (scroll) {
+        const target = el.productList.closest("section") || el.productList;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 }
 
 async function loadPromotionMapFromProducts(productList) {
@@ -607,8 +734,9 @@ function bindCategoryButtons() {
                 ? categoryNameToIdMap.get(String(activeCategory).trim().toLowerCase()) || null
                 : null;
             updateActiveCategoryUI();
+            resetToFirstPage();
             updateQueryString();
-            renderProducts();
+            renderProducts({ scroll: true });
         });
     });
 }
@@ -619,8 +747,9 @@ function bindFilters() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 state.keyword = el.searchInput.value.trim();
+                resetToFirstPage();
                 updateQueryString();
-                renderProducts();
+                renderProducts({ scroll: true });
             }, 180);
         });
     }
@@ -628,24 +757,27 @@ function bindFilters() {
     if (el.priceFilter) {
         el.priceFilter.addEventListener("change", () => {
             state.priceFilter = el.priceFilter.value;
+            resetToFirstPage();
             updateQueryString();
-            renderProducts();
+            renderProducts({ scroll: true });
         });
     }
 
     if (el.ratingFilter) {
         el.ratingFilter.addEventListener("change", () => {
             state.ratingFilter = el.ratingFilter.value;
+            resetToFirstPage();
             updateQueryString();
-            renderProducts();
+            renderProducts({ scroll: true });
         });
     }
 
     if (el.sortFilter) {
         el.sortFilter.addEventListener("change", () => {
             state.sort = el.sortFilter.value;
+            resetToFirstPage();
             updateQueryString();
-            renderProducts();
+            renderProducts({ scroll: true });
         });
     }
 }
@@ -772,6 +904,7 @@ async function init() {
     // Khởi tạo el sau khi DOM sẵn sàng
     el = {
         productList: document.getElementById("productList"),
+        productPagination: document.getElementById("productPagination"),
         searchInput: document.getElementById("searchInput"),
         priceFilter: document.getElementById("priceFilter"),
         ratingFilter: document.getElementById("ratingFilter"),

@@ -37,7 +37,7 @@ app.config["SECRET_KEY"] = Config.SECRET_KEY or "G9_SECRET_KEY"
 app.config["FRONTEND_URL"] = Config.FRONTEND_URL
 init_google_oauth(app)
 if not google_oauth_enabled():
-    print("[Google OAuth] CANH BAO: Dang nhap Google se khong hoat dong")
+    print("[Google OAuth] CẢNH BÁO: Đăng nhập Google sẽ không hoạt động")
 
 # ==============================
 # IMPORT ROUTES (sau khi khởi tạo OAuth)
