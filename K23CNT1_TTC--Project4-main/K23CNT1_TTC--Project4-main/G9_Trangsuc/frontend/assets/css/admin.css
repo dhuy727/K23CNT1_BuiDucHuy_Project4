@@ -71,3 +71,94 @@ body[data-page^="admin"] .form-label {
     object-fit: cover;
     border-radius: 12px;
 }
+
+/* ==================== ADMIN SEARCH / FILTER ==================== */
+
+.admin-filter-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.admin-search-wrap {
+    position: relative;
+}
+
+.admin-search-input {
+    padding: 0.75rem 1.2rem 0.75rem 2.6rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.admin-search-input:focus {
+    border-color: var(--g9-primary, #ffc107);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.12);
+    outline: none;
+}
+
+.admin-search-icon {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd;
+    font-size: 0.95rem;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+.admin-search-wrap:focus-within .admin-search-icon {
+    color: var(--g9-primary, #ffc107);
+}
+
+.admin-filter-select {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    cursor: pointer;
+}
+
+.admin-filter-select:focus {
+    border-color: var(--g9-primary, #ffc107);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.12);
+    outline: none;
+}
+
+.admin-filter-result-count {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.admin-filter-result-count .admin-result-num {
+    color: var(--g9-primary, #d4af37);
+    font-weight: 800;
+}
+
+/* Highlight matched rows */
+.admin-row-highlight {
+    animation: adminRowFadeIn 0.35s ease-out;
+}
+
+@keyframes adminRowFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

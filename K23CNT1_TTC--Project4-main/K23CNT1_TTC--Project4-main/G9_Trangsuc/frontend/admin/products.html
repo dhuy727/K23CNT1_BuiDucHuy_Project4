@@ -74,6 +74,73 @@
                     </div>
                 </div>
 
+                <!-- Search & Filter Section -->
+                <div class="card admin-card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title fw-800 mb-3">
+                            <i class="fas fa-search me-2 admin-card-title-icon"></i>Tìm kiếm & Lọc sản phẩm
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-lg-5">
+                                <label class="admin-filter-label" for="adminSearchInput">
+                                    <i class="fas fa-search me-1"></i> Từ khóa
+                                </label>
+                                <div class="admin-search-wrap">
+                                    <input type="text" class="form-control admin-search-input" id="adminSearchInput"
+                                        placeholder="Nhập tên, chất liệu, mô tả sản phẩm..." />
+                                    <i class="fas fa-search admin-search-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-4">
+                                <label class="admin-filter-label" for="adminCategoryFilter">
+                                    <i class="fas fa-list me-1"></i> Danh mục
+                                </label>
+                                <select id="adminCategoryFilter" class="form-select admin-filter-select">
+                                    <option value="all">Tất cả danh mục</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-2 col-md-4">
+                                <label class="admin-filter-label" for="adminStatusFilter">
+                                    <i class="fas fa-toggle-on me-1"></i> Trạng thái
+                                </label>
+                                <select id="adminStatusFilter" class="form-select admin-filter-select">
+                                    <option value="all">Tất cả</option>
+                                    <option value="Còn hàng">Còn hàng</option>
+                                    <option value="Hết hàng">Hết hàng</option>
+                                    <option value="Ngừng bán">Ngừng bán</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-2 col-md-4">
+                                <label class="admin-filter-label" for="adminSortFilter">
+                                    <i class="fas fa-sort me-1"></i> Sắp xếp
+                                </label>
+                                <select id="adminSortFilter" class="form-select admin-filter-select">
+                                    <option value="default">Mới nhất</option>
+                                    <option value="price-asc">Giá thấp → Cao</option>
+                                    <option value="price-desc">Giá cao → Thấp</option>
+                                    <option value="name-asc">Tên A-Z</option>
+                                    <option value="qty-asc">Số lượng ít → Nhiều</option>
+                                    <option value="qty-desc">Số lượng nhiều → Ít</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Result count & Reset -->
+                        <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top">
+                            <div class="admin-filter-result-count" id="adminFilterResultCount">
+                                <i class="fas fa-box-open me-1"></i>
+                                <span>Đang tải...</span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="adminResetFilter">
+                                <i class="fas fa-rotate-left me-1"></i>Đặt lại bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Table Card -->
                 <div class="card admin-card">
                     <div class="card-body">

@@ -38,11 +38,48 @@
                             </select>
                         </div>
                         <button class="btn btn-warning px-5" type="submit">Đặt hàng</button>
-                        <button class="btn btn-danger px-5 ms-3" type="button" id="cancelBtn" >Hủy</button>
+                        <button class="btn btn-danger px-5 ms-3" type="button" id="cancelBtn">Hủy</button>
                     </form>
                 </div>
             </div>
             <div class="col-lg-4">
+                <div class="price-card mb-4">
+                    <h5 class="fw-bold mb-3">Đơn hàng của bạn</h5>
+                    <div id="checkoutSummary" class="d-grid gap-3">
+                        <div class="text-muted">Đang tải sản phẩm...</div>
+                    </div>
+                </div>
+                <!-- Mã giảm giá -->
+                <div class="price-card mb-4" id="couponSection">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-tag text-gold me-2"></i>Mã giảm giá
+                    </h5>
+                    <div class="coupon-input-group">
+                        <input type="text" id="couponCode" class="form-control coupon-input" placeholder="Nhập mã giảm giá..." autocomplete="off">
+                        <button type="button" id="applyCouponBtn" class="btn btn-gold coupon-apply-btn">
+                            <i class="fas fa-check me-1"></i>Áp dụng
+                        </button>
+                    </div>
+                    <div id="couponResult" class="coupon-result" style="display: none;"></div>
+                    <div id="couponSummary" style="display: none;">
+                        <hr class="my-3" style="border-color: rgba(199,154,43,0.18);">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Tạm tính</span>
+                            <span class="fw-bold" id="originalTotalDisplay">0 VNĐ</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="coupon-discount-label">
+                                <i class="fas fa-percent me-1"></i>Giảm giá
+                            </span>
+                            <span class="fw-bold coupon-discount-value" id="discountAmountDisplay">-0 VNĐ</span>
+                        </div>
+                        <hr class="my-2" style="border-color: rgba(199,154,43,0.18);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold fs-6">Tổng thanh toán</span>
+                            <span class="fw-bold fs-4 text-gold" id="finalTotalDisplay">0 VNĐ</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="price-card">
                     <h5 class="fw-bold mb-3">Lưu ý</h5>
                     <p class="text-muted mb-0">Sau khi đặt hàng thành công, giỏ hàng sẽ được làm mới và đơn hàng của bạn sẽ xuất hiện trong trang tài khoản.</p>
