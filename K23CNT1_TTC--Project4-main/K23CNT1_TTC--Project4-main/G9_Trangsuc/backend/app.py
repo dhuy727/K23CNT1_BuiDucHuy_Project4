@@ -117,3 +117,6 @@ if __name__ == "__main__":
         port=5000,
         debug=True
     )
+    
+#Unicode
+app.json.ensure_ascii = False

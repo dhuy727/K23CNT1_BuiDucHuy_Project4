@@ -197,14 +197,20 @@ function buildCategoryMaps(categoryList) {
     });
 }
 
+function normalizeCategoryName(name) {
+    const lower = String(name || "").trim().toLowerCase();
+    if (lower === "lắc tay" || lower === "lắc") return "vòng tay";
+    return lower;
+}
+
 function resolveSelectedCategoryId() {
     if (selectedCategoryId) return String(selectedCategoryId);
     if (!activeCategory || activeCategory === "all") return null;
-    const normalized = String(activeCategory).trim();
+    const normalized = normalizeCategoryName(activeCategory);
     if (/^[0-9]+$/.test(normalized)) {
         return normalized;
     }
-    return categoryNameToIdMap.get(normalized.toLowerCase()) || null;
+    return categoryNameToIdMap.get(normalized) || null;
 }
 
 function getCategoryIdsByKeyword(keyword) {
@@ -221,7 +227,16 @@ function getCategoryIdsByKeyword(keyword) {
     matchedCategoryIds.forEach((categoryId) => {
         const descendants = categoryDescendantsMap.get(categoryId);
         if (descendants && descendants.size) {
-            descendants.forEach((descId) => ids.add(descId));
+            descendants.forEach((descId) => {
+                const descCat = categories.find(c => String(c.id) === String(descId));
+                if (descCat) {
+                    const descName = String(descCat.name || "").toLowerCase();
+                    // Ngăn chặn sự sai lệch giữa vàng và bạc do sai cấu trúc database cha-con
+                    if (lowerKeyword.includes("vàng") && descName.includes("bạc")) return;
+                    if (lowerKeyword.includes("bạc") && descName.includes("vàng")) return;
+                }
+                ids.add(descId);
+            });
         } else {
             ids.add(categoryId);
         }
@@ -270,7 +285,7 @@ function readQueryString() {
     selectedCategoryId = categoryIdParam ? String(categoryIdParam) : null;
 
     if (!selectedCategoryId && activeCategory && activeCategory !== "all") {
-        selectedCategoryId = categoryNameToIdMap.get(String(activeCategory).trim().toLowerCase()) || null;
+        selectedCategoryId = categoryNameToIdMap.get(normalizeCategoryName(activeCategory)) || null;
     }
 
     if (selectedCategoryId && !categoryParam) {
@@ -346,7 +361,7 @@ function renderRatingStars(value) {
 }
 
 function applyFilters() {
-    const keyword = state.keyword.trim().toLowerCase();
+    const keyword = state.keyword.trim().toLowerCase().normalize("NFC");
     const { min, max } = getPriceFilterBounds(state.priceFilter);
     const resolvedCategoryId = resolveSelectedCategoryId();
     const keywordCategoryIds = getCategoryIdsByKeyword(keyword);
@@ -355,11 +370,58 @@ function applyFilters() {
         const p = normalizeProduct(product);
         const productCategoryId = String(p.category_id || "");
 
-        const matchesCategory =
-            activeCategory === "all" ||
-            (resolvedCategoryId !== null && categoryDescendantsMap.has(resolvedCategoryId) && categoryDescendantsMap.get(resolvedCategoryId).has(productCategoryId)) ||
-            String(p.category_id || "") === resolvedCategoryId ||
-            String(p.category_name || "").toLowerCase() === String(activeCategory).toLowerCase();
+        const activeCatLower = normalizeCategoryName(activeCategory).normalize("NFC");
+        const prodCatLower = normalizeCategoryName(p.category_name).normalize("NFC");
+        const prodNameLower = String(p.name || "").toLowerCase().normalize("NFC");
+        const prodMaterialLower = String(p.material || "").toLowerCase().normalize("NFC");
+
+        let matchesCategory = false;
+        if (activeCategory === "all") {
+            matchesCategory = true;
+        } else {
+            // 1. Khớp ID trực tiếp hoặc mối quan hệ cha-con
+            let dbMatch = (resolvedCategoryId !== null && categoryDescendantsMap.has(resolvedCategoryId) && categoryDescendantsMap.get(resolvedCategoryId).has(productCategoryId)) ||
+                           String(p.category_id || "") === resolvedCategoryId ||
+                           prodCatLower === activeCatLower;
+
+            if (dbMatch) {
+                // Tách biệt Vàng và Bạc khi lọc theo DB
+                if (activeCatLower === "vàng" && (prodCatLower.includes("bạc") || prodNameLower.includes("bạc"))) {
+                    dbMatch = false;
+                }
+                if (activeCatLower === "bạc" && (prodCatLower.includes("vàng") || prodNameLower.includes("vàng"))) {
+                    dbMatch = false;
+                }
+            }
+
+            // 2. So khớp ngữ nghĩa chất liệu (Vàng, Bạc, Kim Cương)
+            let materialSemanticMatch = false;
+            if (activeCatLower === "vàng") {
+                const hasVang = prodCatLower.includes("vàng") || prodNameLower.includes("vàng") || prodMaterialLower.includes("vàng");
+                const hasBac = prodCatLower.includes("bạc") || prodNameLower.includes("bạc") || prodMaterialLower.includes("bạc");
+                materialSemanticMatch = hasVang && !hasBac;
+            } else if (activeCatLower === "bạc") {
+                const hasBac = prodCatLower.includes("bạc") || prodNameLower.includes("bạc") || prodMaterialLower.includes("bạc");
+                const hasVang = prodCatLower.includes("vàng") || prodNameLower.includes("vàng") || prodMaterialLower.includes("vàng");
+                materialSemanticMatch = hasBac && !hasVang;
+            } else if (activeCatLower === "kim cương") {
+                materialSemanticMatch = prodCatLower.includes("kim cương") || prodNameLower.includes("kim cương") || prodMaterialLower.includes("kim cương");
+            }
+
+            // 3. So khớp ngữ nghĩa loại sản phẩm (Nhẫn, Dây chuyền, Bông tai, Vòng tay)
+            let typeSemanticMatch = false;
+            if (activeCatLower === "nhẫn") {
+                typeSemanticMatch = prodCatLower.includes("nhẫn") || prodNameLower.includes("nhẫn");
+            } else if (activeCatLower === "dây chuyền") {
+                typeSemanticMatch = prodCatLower.includes("dây chuyền") || prodNameLower.includes("dây chuyền");
+            } else if (activeCatLower === "vòng tay") {
+                typeSemanticMatch = prodCatLower.includes("vòng tay") || prodNameLower.includes("vòng tay") || prodCatLower.includes("lắc") || prodNameLower.includes("lắc");
+            } else if (activeCatLower === "bông tai") {
+                typeSemanticMatch = prodCatLower.includes("bông tai") || prodNameLower.includes("bông tai");
+            }
+
+            matchesCategory = dbMatch || materialSemanticMatch || typeSemanticMatch;
+        }
 
         const searchable = [
             p.name,
@@ -369,7 +431,8 @@ function applyFilters() {
         ]
             .filter(Boolean)
             .join(" ")
-            .toLowerCase();
+            .toLowerCase()
+            .normalize("NFC");
 
         const matchesKeyword = !keyword || searchable.includes(keyword) || (keywordCategoryIds && keywordCategoryIds.has(productCategoryId));
         const matchesMin = min === null || p.finalPrice >= min;

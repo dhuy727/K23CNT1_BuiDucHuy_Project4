@@ -1,6 +1,7 @@
 
 const productParams = new URLSearchParams(window.location.search);
 const productId = productParams.get('id');
+let productStock = 0;
 
 async function loadProductDetail() {
     const box = document.getElementById('productDetail');
@@ -21,8 +22,9 @@ async function loadProductDetail() {
             return;
         }
 
+        productStock = Number(product.quantity || 0);
         const imageUrl = getImageUrl(String(product.image || "").replace(/\\/g, "/"));
-        const stockLabel = Number(product.quantity || 0) > 0 ? `<span class="badge bg-success">Còn hàng</span>` : `<span class="badge bg-secondary">Hết hàng</span>`;
+        const stockLabel = productStock > 0 ? `<span class="badge bg-success">Còn hàng</span>` : `<span class="badge bg-secondary">Hết hàng</span>`;
 
         box.innerHTML = `
             <div class="mb-4">
@@ -55,9 +57,11 @@ async function loadProductDetail() {
                         <div class="d-flex flex-wrap gap-3 align-items-center">
                             <div class="input-group" style="max-width: 150px;">
                                 <span class="input-group-text">SL</span>
-                                <input type="number" id="quantity" class="form-control" min="1" value="1">
+                                <input type="number" id="quantity" class="form-control" min="${productStock > 0 ? 1 : 0}" max="${productStock}" value="${productStock > 0 ? 1 : 0}" ${productStock <= 0 ? 'disabled' : ''}>
                             </div>
-                            <button type="button" class="btn btn-gold px-4" onclick="addToCartFromDetail()">Thêm vào giỏ hàng</button>
+                            <button type="button" class="btn btn-gold px-4" onclick="addToCartFromDetail()" ${productStock <= 0 ? 'disabled' : ''}>
+                                ${productStock > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng'}
+                            </button>
                             <a href="products.html" class="btn btn-outline-gold px-4">Quay lại</a>
                         </div>
                     </div>
@@ -87,6 +91,28 @@ async function loadProductDetail() {
                 </div>
             </div>
         `;
+
+        const quantityInput = document.getElementById('quantity');
+        if (quantityInput) {
+            const handleQuantityCheck = function() {
+                let val = Math.floor(Number(quantityInput.value));
+                if (isNaN(val) || val < 1) {
+                    if (productStock > 0) {
+                        quantityInput.value = 1;
+                    } else {
+                        quantityInput.value = 0;
+                    }
+                } else if (val > productStock) {
+                    showToast(`Chỉ còn ${productStock} sản phẩm trong kho.`, 'warning');
+                    quantityInput.value = productStock;
+                } else {
+                    quantityInput.value = val;
+                }
+            };
+            quantityInput.addEventListener('change', handleQuantityCheck);
+            quantityInput.addEventListener('keyup', handleQuantityCheck);
+        }
+
         loadProductReviews(productId);
     } catch (error) {
         box.innerHTML = `<div class='alert alert-danger'>Không tải được chi tiết sản phẩm.</div>`;
@@ -249,6 +275,10 @@ async function addToCartFromDetail() {
     const quantity = Number(document.getElementById('quantity')?.value || 1);
     if (quantity < 1) {
         showToast('Số lượng phải lớn hơn 0', 'error');
+        return;
+    }
+    if (quantity > productStock) {
+        showToast(`Không thể thêm. Chỉ còn ${productStock} sản phẩm trong kho.`, 'error');
         return;
     }
 
