@@ -2,27 +2,30 @@
 
 ## Tổng quan
 
-Dự án là một website bán trang sức với backend Flask và frontend tĩnh. Backend cung cấp API cho các chức năng:
-- Xác thực JWT
-- Quản lý sản phẩm, danh mục, tin tức, giá vàng, khuyến mãi
-- Giỏ hàng, đơn hàng, người dùng và quản trị
-- Tải ảnh và xử lý upload
+Dự án là một website bán trang sức với backend Flask và frontend jS/html5. Backend nằm trong `G9_Trangsuc/backend`, còn frontend cho admin và user nằm trong `G9_Trangsuc/backend/frontend`.
 
-Frontend được tổ chức trong thư mục `G9_Trangsuc/backend/frontend` với các trang dành cho admin và user.
+Backend cung cấp API và chức năng chính:
+- Xác thực JWT cho admin và user
+- Quản lý sản phẩm, danh mục, tin tức, giá vàng, khuyến mãi
+- Giỏ hàng, đơn hàng, thanh toán, người dùng, quản trị
+- Upload ảnh và xử lý file
 
 ## Cấu trúc thư mục chính
 
-- `G9_Trangsuc/backend`
+- `G9_Trangsuc/backend/`
   - `app.py` - entrypoint Flask server
+  - `config.py` - cấu hình ứng dụng
   - `requirements.txt` - thư viện Python cần cài
   - `.env` - biến môi trường cấu hình
-  - `database/` - kết nối và hàm helper cho SQL Server
+  - `database/` - kết nối SQL Server và helper database
   - `routes/` - định nghĩa blueprint API
   - `services/` - logic nghiệp vụ
   - `models/` - truy vấn SQL và thao tác dữ liệu
   - `middleware/` - xác thực JWT và kiểm tra quyền
+  - `extensions/` - mở rộng OAuth Google
   - `utils/` - helper chung
-  - `frontend/` - giao diện HTML/CSS/JS cho admin và user
+  - `uploads/` - lưu trữ file upload
+  - `frontend/` - giao diện HTML/CSS/JS tĩnh cho admin và user
 
 ## Thiết lập môi trường backend
 
@@ -36,7 +39,7 @@ Frontend được tổ chức trong thư mục `G9_Trangsuc/backend/frontend` v�
    pip install -r requirements.txt
    ```
 
-3. Cấu hình biến môi trường trong `G9_Trangsuc/backend/.env`:
+3. Tạo hoặc cập nhật file `.env` trong `G9_Trangsuc/backend` với nội dung tương tự:
    ```text
    DB_SERVER=localhost
    DB_NAME=G9_TrangSucDB
@@ -64,28 +67,18 @@ Các gói backend chính:
 - `pyodbc`
 - `PyJWT`
 - `requests`
+- `Authlib`
 
 ## Cơ sở dữ liệu
 
 Backend hiện tại kết nối SQL Server bằng `pyodbc` trong `G9_Trangsuc/backend/database/db.py`.
 
-> Lưu ý: file `db.py` hiện dùng kết nối tĩnh tới `DESKTOP-OBG50HB\SQLEXPRESS` và cơ sở dữ liệu `G9_TrangSucDB`. Nếu bạn dùng máy khác, hãy chỉnh lại kết nối trong `database/db.py` hoặc chuyển sang dùng biến môi trường.
+> Lưu ý: file `db.py` có thể chứa cấu hình kết nối . Nếu bạn dùng máy khác, hãy chỉnh lại kết nối trong `database/db.py` hoặc cập nhật `.env`.
 
 ## Chức năng nổi bật
 
-- Hệ thống xác thực JWT theo role admin/user
-- Quản lý sản phẩm, loại sản phẩm, đánh giá, tin tức
+- Xác thực JWT theo role admin/user
+- Quản lý sản phẩm, danh mục, đánh giá, tin tức
 - Giỏ hàng, đặt hàng, thanh toán
-- Quản trị đơn hàng, người dùng, báo cáo dashboard
+- Quản trị đơn hàng, người dùng, dashboard
 - Upload ảnh
-
-## Ghi chú
-
-- `AUTHENTICATION.md` chứa chi tiết về cách hoạt động JWT và middleware.
-- `REFACTORING_SUMMARY.md` chứa tóm tắt tinh chỉnh code nếu cần tham khảo.
-
----
-
-## Tên repo gốc
-
-Repo hiện tại: `K23CNT1_BuiDucHuy_Project4` (nhánh `master`).
