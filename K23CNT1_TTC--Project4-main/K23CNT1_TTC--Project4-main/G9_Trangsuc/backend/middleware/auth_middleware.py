@@ -15,6 +15,7 @@ from utils.jwt_helper import decode_token
 # DECORATOR: REQUIRE AUTHENTICATION
 # Kiểm tra JWT token từ Authorization header
 # ==============================
+# Decorator bắt buộc đăng nhập JWT
 def require_auth(f):
     """
     Decorator bắt buộc xác thực JWT token
@@ -23,7 +24,6 @@ def require_auth(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
-            # Lấy token từ header
             auth_header = request.headers.get("Authorization")
 
             if not auth_header:
@@ -69,6 +69,7 @@ def require_auth(f):
 # DECORATOR: REQUIRE ADMIN ROLE
 # Chỉ admin mới có quyền truy cập
 # ==============================
+# Decorator chỉ cho phép admin
 def require_admin(f):
     """
     Decorator bắt buộc admin role
@@ -77,14 +78,12 @@ def require_admin(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
-            # Kiểm tra user_data đã được authenticate
             if not hasattr(request, "current_user"):
                 return jsonify({
                     "success": False,
                     "message": "Authentication required. Use @require_auth decorator"
                 }), 401
 
-            # Kiểm tra role
             user_role = request.current_user.get("role", "").lower()
 
             if user_role != "admin":
@@ -108,6 +107,7 @@ def require_admin(f):
 # DECORATOR: REQUIRE USER ROLE
 # Chỉ user bình thường có quyền truy cập
 # ==============================
+# Decorator chỉ cho phép user đã đăng nhập
 def require_user(f):
     """
     Decorator bắt buộc user role (không phải guest)
@@ -146,6 +146,7 @@ def require_user(f):
 # DECORATOR: OPTIONAL AUTHENTICATION
 # Authentication không bắt buộc nhưng nếu có token thì verify
 # ==============================
+# Decorator xác thực tùy chọn (có token thì kiểm tra)
 def optional_auth(f):
     """
     Decorator optional - user có thể access với hoặc không có token
@@ -194,6 +195,7 @@ def optional_auth(f):
 # UTILITY: GET CURRENT USER
 # Lấy thông tin user từ request context
 # ==============================
+# Lấy thông tin user hiện tại từ request
 def get_current_user():
     """
     Lấy user data từ request context
@@ -206,6 +208,7 @@ def get_current_user():
 # UTILITY: GET CURRENT USER ID
 # Lấy user ID
 # ==============================
+# Lấy ID user hiện tại
 def get_current_user_id():
     """
     Lấy user ID
@@ -218,6 +221,7 @@ def get_current_user_id():
 # UTILITY: IS ADMIN
 # Kiểm tra user là admin
 # ==============================
+# Kiểm tra user hiện tại là admin
 def is_admin():
     """
     Kiểm tra user là admin
@@ -230,6 +234,7 @@ def is_admin():
 # UTILITY: IS CURRENT USER
 # Kiểm tra user request = user trong DB
 # ==============================
+# Kiểm tra user_id trùng user hiện tại hoặc admin
 def is_current_user(user_id):
     """
     Kiểm tra user_id = current_user.id

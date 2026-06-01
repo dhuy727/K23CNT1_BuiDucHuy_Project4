@@ -91,7 +91,11 @@ async function loadFeaturedProducts() {
                 : { outOfStock: Number(product.quantity || 0) <= 0, label: 'Hết hàng' };
             return `
             <div class="featured-carousel-card fade-up">
-                <div class="card product-card h-100">
+                <div class="card product-card product-card--clickable h-100"
+                     role="link"
+                     tabindex="0"
+                     onclick="navigateToProductDetail(event, ${Number(product.id)})"
+                     onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); navigateToProductDetail(event, ${Number(product.id)}); }">
                     <div class="position-relative overflow-hidden">
                         <img src="${escapeHtml(getImageUrl(product.image))}" class="card-img-top" alt="${escapeHtml(product.name)}">
                         <span class="badge badge-soft position-absolute top-0 start-0 m-3">${escapeHtml(product.category_name || 'Trang sức')}</span>
@@ -100,12 +104,11 @@ async function loadFeaturedProducts() {
                         <div class="product-name">${escapeHtml(product.name)}</div>
                         <div class="product-meta mb-2">${escapeHtml(product.category_name || '')}</div>
                         <div class="product-price mb-3">${formatMoney(product.price)}</div>
-                        <div class="d-flex gap-2 mt-auto flex-wrap">
-                            <a href="product-detail.html?id=${product.id}" class="btn btn-outline-gold flex-grow-1">Xem chi tiết</a>
+                        <div class="d-flex gap-2 mt-auto flex-wrap product-card-actions justify-content-end">
                             ${stock.outOfStock ? `
                                 <button type="button" class="btn btn-secondary" disabled title="${escapeHtml(stock.label)}">${escapeHtml(stock.label)}</button>
                             ` : `
-                                <button class="btn btn-gold" type="button" onclick="addToCart(${Number(product.id)})">+ Giỏ</button>
+                                <button class="btn btn-gold" type="button" onclick="event.stopPropagation(); addToCart(${Number(product.id)})">+ Giỏ</button>
                             `}
                         </div>
                     </div>

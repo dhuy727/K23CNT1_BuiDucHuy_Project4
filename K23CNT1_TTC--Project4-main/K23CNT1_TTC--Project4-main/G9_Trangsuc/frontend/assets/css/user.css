@@ -129,6 +129,23 @@
     box-shadow: 0 12px 32px rgba(0,0,0,0.15);
 }
 
+.product-card--clickable {
+    cursor: pointer;
+}
+
+.product-card--clickable:focus-visible {
+    outline: 2px solid rgba(212, 175, 55, 0.55);
+    outline-offset: 3px;
+}
+
+.product-card--clickable .product-card-actions {
+    cursor: default;
+}
+
+.product-card--clickable .product-card-actions .btn {
+    cursor: pointer;
+}
+
 .product-card .card-img-top {
     height: 280px;
     object-fit: cover;

@@ -7,7 +7,7 @@
 # - Chạy server Flask
 # ==============================
 
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 import os
 
@@ -126,6 +126,5 @@ if __name__ == "__main__":
         port=5000,
         debug=True
     )
-    
-#Unicode
+
 app.json.ensure_ascii = False

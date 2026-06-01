@@ -21,7 +21,6 @@ def get_news():
 
 
 # ==============================
-# API LẤY CHI TIẾT TIN TỨC
 # URL: /api/news/<id>
 # ==============================
 @news_bp.route("/<int:news_id>", methods=["GET"])
@@ -47,7 +46,6 @@ def get_news_detail(news_id):
 
 
 # ==============================
-# API THÊM TIN TỨC
 # ==============================
 @news_bp.route("/", methods=["POST"])
 @require_auth
@@ -68,7 +66,6 @@ def create_news():
 
 
 # ==============================
-# API CẬP NHẬT TIN TỨC
 # ==============================
 @news_bp.route("/<int:news_id>", methods=["PUT"])
 @require_auth
@@ -89,7 +86,6 @@ def update_news(news_id):
 
 
 # ==============================
-# API XÓA TIN TỨC
 # ==============================
 @news_bp.route("/<int:news_id>", methods=["DELETE"])
 @require_auth

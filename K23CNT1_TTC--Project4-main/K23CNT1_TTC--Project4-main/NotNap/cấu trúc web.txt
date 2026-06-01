@@ -2,223 +2,238 @@
 DỰ ÁN WEBSITE G9 TRANG SỨC
 ===========================
 
-Công nghệ sử dụng:
-- Backend: Python FlaskAPI
-- Database: Microsoft SQL Server
+Công nghệ sử dụng (đúng theo thư mục `G9_Trangsuc`):
+- Backend: Python Flask + Flask-Cors
+- Database: Microsoft SQL Server (pyodbc)
+- Auth: JWT (PyJWT) + Google OAuth (Authlib)
+- Payment: PayPal REST (requests)
 - Frontend: HTML5, CSS3, JavaScript, Bootstrap 5
-- API: Fetch / Axios
-- Thông báo: SweetAlert2
 - Dashboard: Chart.js
-- IDE: Visual Studio Code
+- Quản lý cấu hình: python-dotenv (.env)
 - Quản lý source: Git / GitHub
 
 
 =========================================================
-CẤU TRÚC THƯ MỤC DỰ ÁN WEBSITE BÁN TRANG SỨC G9
+CẤU TRÚC THƯ MỤC DỰ ÁN WEBSITE BÁN TRANG SỨC G9 (G9_Trangsuc)
 =========================================================
 
-
-backend/
+G9_Trangsuc/
+├── backend/
 │   ├── app.py
 │   ├── config.py
 │   ├── requirements.txt
+│   ├── .env
+│   ├── .gitignore
 │   │
 │   ├── database/
 │   │   ├── db.py
-│   │   └── init.sql
+│   │   └── seed.sql
 │   │
-│   ├── routes/
-│   │   ├── auth_routes.py
-│   │   ├── product_routes.py
-│   │   ├── category_routes.py
-│   │   ├── order_routes.py
-│   │   ├── news_routes.py
-│   │   ├── gold_routes.py
-│   │   ├── review_routes.py
-│   │   └── admin_routes.py
+│   ├── extensions/
+│   │   └── google_oauth.py
+│   │
+│   ├── middleware/
+│   │   └── auth_middleware.py
+│   │
+│   ├── models/
+│   │   ├── auth_model.py
+│   │   ├── user_model.py
+│   │   ├── admin_model.py
+│   │   ├── dashboard_model.py
+│   │   ├── category_model.py
+│   │   ├── product_model.py
+│   │   ├── review_model.py
+│   │   ├── cart_model.py
+│   │   ├── order_model.py
+│   │   ├── payment_model.py
+│   │   ├── promotion_model.py
+│   │   ├── news_model.py
+│   │   └── gold_model.py
 │   │
 │   ├── services/
 │   │   ├── auth_service.py
+│   │   ├── user_service.py
 │   │   ├── product_service.py
-│   │   └── order_service.py
+│   │   ├── category_service.py
+│   │   ├── review_service.py
+│   │   ├── cart_service.py
+│   │   ├── order_service.py
+│   │   ├── paypal_service.py
+│   │   └── promotion_service.py
 │   │
-│   ├── models/
-│   │   ├── user_model.py
-│   │   ├── product_model.py
-│   │   └── order_model.py
+│   ├── utils/
+│   │   ├── jwt_helper.py
+│   │   └── request_validator.py
 │   │
-│   ├── uploads/
+│   ├── uploads/                  (lưu ảnh/file upload; được serve qua /uploads/* và /news/*)
 │   │
-│   └── utils/
-│       ├── jwt_helper.py
-│       └── validators.py
+│   └── routes/
+│       ├── __init__.py           (tập trung import blueprints)
+│       ├── auth/
+│       │   ├── __init__.py
+│       │   └── auth_routes.py
+│       ├── products/
+│       │   ├── __init__.py
+│       │   ├── product_routes.py
+│       │   ├── category_routes.py
+│       │   └── review_routes.py
+│       ├── cart_checkout/
+│       │   ├── __init__.py
+│       │   ├── cart_routes.py
+│       │   └── order_routes.py
+│       ├── account/
+│       │   ├── __init__.py
+│       │   └── user_routes.py
+│       ├── admin_management/
+│       │   ├── __init__.py
+│       │   ├── admin_routes.py
+│       │   └── dashboard_routes.py
+│       ├── news/
+│       │   ├── __init__.py
+│       │   └── news_routes.py
+│       ├── gold/
+│       │   ├── __init__.py
+│       │   └── gold_routes.py
+│       ├── promotions/
+│       │   ├── __init__.py
+│       │   └── promotion_routes.py
+│       ├── uploads/
+│       │   ├── __init__.py
+│       │   └── upload_routes.py
+│       └── payments/
+│           └── paypal_routes.py
 │
-├── frontend/
-│   ├── user/
-│   │   ├── index.html
-│   │   ├── cart.html
-│   │   ├── checkout.html
-│   │   ├── login.html
-│   │   ├── news.html
-│   │   └── gold-price.html
-│   │
-│   ├── admin/
-│   │   ├── dashboard.html
-│   │   ├── products.html
-│   │   ├── categories.html
-│   │   ├── orders.html
-│   │   └── news.html
-│   │
-│   ├── assets/
-│   │   ├── css/
-│   │   ├── js/
-│   │   │   ├── user/
-│   │   │   ├── admin/
-│   │   │   └── shared/
-│   │   ├── images/
-│   │   └── uploads/
-│   │
-│   └── components/
-│       ├── header.html
-│       ├── footer.html
-│       └── sidebar.html
-│
-└── docs/
-    ├── api_docs.md
-    └── database_design.md
-
-───────────────────────────────────────
-   GITHUB & QUẢN LÝ SOURCE
-───────────────────────────────────────
-
-GitHub:
-- Push source code
-- Quản lý commit
-- Quản lý branch
-- Chia module theo thành viên
-
-
-=========================================================
-PHÂN CÔNG THÀNH VIÊN
-=========================================================
-
-1. NNH — Xác thực & Tài khoản
---------------------------------
-Backend:
-- auth_routes.py
-- auth_service.py
-
-Frontend:
-- login.html
-- register.html
-- forgot-password.html
-- profile.html
-
-Chức năng:
-- Đăng nhập
-- Đăng ký
-- Quên mật khẩu
-- Đổi mật khẩu
-- Logout
-- Phân quyền
-- Thông tin người dùng
-
-
-2. BDH — Backend API & Dashboard
---------------------------------
-Backend:
-- product_routes.py
-- category_routes.py
-- order_routes.py
-- dashboard_routes.py
-- news_routes.py
-- gold_routes.py
-- review_routes.py
-- user_routes.py
-
-Chức năng:
-- CRUD sản phẩm
-- CRUD danh mục
-- CRUD đơn hàng
-- CRUD người dùng
-- Dashboard thống kê
-- API tin tức
-- API giá vàng
-- API đánh giá
-
-
-3. PTP — Frontend khách hàng
---------------------------------
-Frontend:
-- index.html
-- products.html
-- product-detail.html
-- cart.html
-
-JS:
-- product.js
-- product-detail.js
-- cart.js
-
-Chức năng:
-- Trang chủ
-- Hiển thị sản phẩm
-- Tìm kiếm sản phẩm
-- Chi tiết sản phẩm
-- Giỏ hàng
-
-
-4. VMC — Thanh toán & Tin tức
---------------------------------
-Frontend:
-- checkout.html
-- orders.html
-- order-detail.html
-- gold-price.html
-- news.html
-- news-detail.html
-
-JS:
-- checkout.js
-- order.js
-- gold.js
-- news.js
-
-Chức năng:
-- Thanh toán
-- Đặt hàng
-- Xem đơn hàng
-- Giá vàng
-- Tin tức
-- Đánh giá sản phẩm
+└── frontend/
+    ├── user/
+    │   ├── index.html
+    │   ├── products.html
+    │   ├── product-detail.html
+    │   ├── cart.html
+    │   ├── checkout.html
+    │   ├── orders.html
+    │   ├── order-detail.html
+    │   ├── login.html
+    │   ├── register.html
+    │   ├── profile.html
+    │   ├── google-callback.html
+    │   ├── payment-success.html
+    │   ├── payment-failed.html
+    │   ├── news.html
+    │   ├── news-detail.html
+    │   └── gold-price.html
+    │
+    ├── admin/
+    │   ├── dashboard.html
+    │   ├── products.html
+    │   ├── product-create.html
+    │   ├── product-edit.html
+    │   ├── categories.html
+    │   ├── category-create.html
+    │   ├── category-edit.html
+    │   ├── orders.html
+    │   ├── order-detail.html
+    │   ├── users.html
+    │   ├── news.html
+    │   ├── news-create.html
+    │   ├── news-edit.html
+    │   ├── gold-price.html
+    │   ├── gold-create.html
+    │   ├── gold-edit.html
+    │   ├── promotions.html
+    │   ├── promotion-create.html
+    │   └── promotion-edit.html
+    │
+    └── assets/
+        ├── css/
+        │   ├── style.css
+        │   ├── user.css
+        │   └── admin.css
+        └── js/
+            ├── user/
+            │   ├── home.js
+            │   ├── product.js
+            │   ├── product-detail.js
+            │   ├── cart.js
+            │   ├── checkout.js
+            │   ├── order.js
+            │   ├── login.js
+            │   ├── register.js
+            │   ├── profile.js
+            │   ├── google-callback.js
+            │   ├── news.js
+            │   ├── news-detail.js
+            │   ├── gold.js
+            │   └── payment-success.js
+            └── admin/
+                ├── admin-sidebar.js
+                ├── dashboard.js
+                ├── products.js
+                ├── categories.js
+                ├── orders.js
+                ├── users.js
+                ├── admin-product-create.js
+                ├── admin-product-edit.js
+                ├── admin-category-create.js
+                ├── admin-category-edit.js
+                ├── admin-news.js
+                ├── admin-news-create.js
+                ├── admin-news-edit.js
+                ├── admin-gold.js
+                ├── admin-gold-create.js
+                ├── admin-gold-edit.js
+                ├── promotions.js
+                ├── admin-promotion-create.js
+                └── admin-promotion-edit.js
 
 
 =========================================================
-CHỨC NĂNG WEBSITE HOÀN CHỈNH
+API MODULES (đúng theo `backend/app.py` + `routes/__init__.py`)
+=========================================================
+
+Các blueprint và url_prefix:
+- /api/auth        -> `routes/auth/auth_routes.py` (đăng nhập/đăng ký/JWT/Google OAuth callback)
+- /api/products    -> `routes/products/product_routes.py` (danh sách/chi tiết/tìm kiếm sản phẩm)
+- /api/categories  -> `routes/products/category_routes.py` (danh mục)
+- /api/reviews     -> `routes/products/review_routes.py` (đánh giá sản phẩm)
+- /api/cart        -> `routes/cart_checkout/cart_routes.py` (giỏ hàng)
+- /api/orders      -> `routes/cart_checkout/order_routes.py` (đơn hàng)
+- /api/user        -> `routes/account/user_routes.py` (tài khoản người dùng)
+- /api/admin       -> `routes/admin_management/admin_routes.py` (quản trị)
+- /api/dashboard   -> `routes/admin_management/dashboard_routes.py` (thống kê)
+- /api/news        -> `routes/news/news_routes.py` (tin tức)
+- /api/gold        -> `routes/gold/gold_routes.py` (giá vàng)
+- /api/promotions  -> `routes/promotions/promotion_routes.py` (khuyến mãi)
+- /api/upload      -> `routes/uploads/upload_routes.py` (upload ảnh/file)
+- /api/paypal      -> `routes/payments/paypal_routes.py` (tạo/confirm thanh toán PayPal)
+
+Ngoài API, `backend/app.py` còn serve frontend:
+- `/` -> `frontend/user/index.html`
+- `/uploads/<file>` và `/news/<file>` -> serve file từ `backend/uploads/`
+
+
+=========================================================
+CHỨC NĂNG WEBSITE 
 =========================================================
 
 KHÁCH HÀNG:
-- Đăng ký
-- Đăng nhập
-- Quên mật khẩu
-- Xem sản phẩm
-- Tìm kiếm sản phẩm
-- Xem chi tiết sản phẩm
-- Thêm giỏ hàng
-- Thanh toán
-- Theo dõi đơn hàng
+- Đăng ký / Đăng nhập (JWT)
+- Đăng nhập Google (OAuth) qua `google-callback.html`
+- Quản lý hồ sơ: xem/cập nhật thông tin cơ bản
+- Xem danh sách sản phẩm, lọc/tìm kiếm, xem chi tiết
+- Giỏ hàng: thêm/sửa/xóa sản phẩm
+- Đặt hàng: checkout, tạo đơn hàng
+- Thanh toán PayPal: thành công/thất bại 
+- Theo dõi danh sách đơn hàng + xem chi tiết đơn
 - Đánh giá sản phẩm
 - Xem giá vàng
-- Xem tin tức
-
+- Xem tin tức + chi tiết tin tức
 
 ADMIN:
 - Dashboard thống kê
 - CRUD sản phẩm
 - CRUD danh mục
-- CRUD đơn hàng
-- CRUD người dùng
+- CRUD đơn hàng + xem chi tiết
+- Quản lý người dùng
 - CRUD tin tức
 - CRUD giá vàng
-- Quản lý đánh giá
-- Quản lý thanh toán
+- Quản lý khuyến mãi

@@ -14,6 +14,7 @@ EXCHANGE_RATE_VND_TO_USD = 23000.0
 # =========================
 # LẤY ACCESS TOKEN
 # =========================
+# Lấy access token PayPal OAuth
 def get_access_token():
 
     url = f"{BASE_URL}/v1/oauth2/token"
@@ -29,6 +30,7 @@ def get_access_token():
 # =========================
 # TẠO ORDER
 # =========================
+# Tạo đơn thanh toán PayPal
 def create_paypal_order(order_id, total):
 
     access_token = get_access_token()
@@ -85,6 +87,7 @@ def create_paypal_order(order_id, total):
 # =========================
 # CAPTURE PAYMENT
 # =========================
+# Thu tiền đơn PayPal sau khi khách thanh toán
 def capture_paypal_order(paypal_order_id):
 
     access_token = get_access_token()
@@ -104,6 +107,7 @@ def capture_paypal_order(paypal_order_id):
     return response.json()
 
 
+# Lấy chi tiết đơn PayPal theo mã đơn
 def get_paypal_order(paypal_order_id):
     """Lấy chi tiết order từ PayPal"""
     access_token = get_access_token()

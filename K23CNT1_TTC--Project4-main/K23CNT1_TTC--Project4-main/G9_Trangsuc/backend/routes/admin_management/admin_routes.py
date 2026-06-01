@@ -12,7 +12,6 @@ admin_bp = Blueprint("admin", __name__)
 
 
 # ==============================
-# API LẤY DANH SÁCH NGƯỜI DÙNG
 # URL: /api/admin/users
 # ==============================
 @admin_bp.route("/users", methods=["GET"])
@@ -34,11 +33,11 @@ def get_users():
 
 
 # ==============================
-# API CẬP NHẬT TRẠNG THÁI NGƯỜI DÙNG
 # BODY: status
+# ==============================
 @require_auth
 @require_admin
-# ==============================
+
 @admin_bp.route("/users/status/<int:user_id>", methods=["PUT"])
 def update_user_status(user_id):
     try:

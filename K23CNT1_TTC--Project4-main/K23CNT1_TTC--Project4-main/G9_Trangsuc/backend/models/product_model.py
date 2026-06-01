@@ -71,6 +71,7 @@ class ProductModel:
         return product
 
     @staticmethod
+    # Đặt trạng thái sản phẩm theo tồn kho
     def resolve_status_by_quantity(quantity, status=None):
         """Tự động đặt trạng thái theo số lượng tồn kho"""
         quantity = int(quantity or 0)
@@ -81,6 +82,7 @@ class ProductModel:
         return status or "Còn hàng"
 
     @staticmethod
+    # Đồng bộ trạng thái sau khi đổi tồn kho
     def sync_status_with_stock(product_id, cursor=None):
         """Đồng bộ trạng thái sản phẩm sau khi thay đổi tồn kho"""
         sql = """

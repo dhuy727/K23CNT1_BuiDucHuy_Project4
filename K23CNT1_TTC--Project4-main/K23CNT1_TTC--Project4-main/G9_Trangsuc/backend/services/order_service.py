@@ -36,11 +36,9 @@ class OrderService:
         if not address or len(address.strip()) == 0:
             errors.append("Địa chỉ giao hàng không được trống")
 
-        # Kiểm tra giỏ hàng
         if CartService.is_cart_empty(user_id):
             errors.append("Giỏ hàng trống")
 
-        # Kiểm tra hàng có sẵn
         is_valid, message = CartService.validate_cart_availability(user_id)
         if not is_valid:
             errors.append(message)

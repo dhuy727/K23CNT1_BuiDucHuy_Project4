@@ -18,7 +18,6 @@ promotion_bp = Blueprint("promotions", __name__)
 
 
 # ==============================
-# API LẤY TẤT CẢ KHUYẾN MÃI
 # URL: /api/promotions/
 # ==============================
 @promotion_bp.route("/", methods=["GET"])
@@ -38,7 +37,6 @@ def get_all_promotions():
 
 
 # ==============================
-# API LẤY CHI TIẾT KHUYẾN MÃI
 # URL: /api/promotions/<id>
 # ==============================
 @promotion_bp.route("/<int:promotion_id>", methods=["GET"])
@@ -64,7 +62,6 @@ def get_promotion(promotion_id):
 
 
 # ==============================
-# API TÌM KHUYẾN MÃI THEO CODE
 # URL: /api/promotions/code/<code>
 # ==============================
 @promotion_bp.route("/code/<code>", methods=["GET"])
@@ -90,7 +87,6 @@ def get_promotion_by_code(code):
 
 
 # ==============================
-# API LẤY KHUYẾN MÃI THEO DANH MỤC
 # URL: /api/promotions/category/<category_id>
 # ==============================
 @promotion_bp.route("/category/<int:category_id>", methods=["GET"])
@@ -110,7 +106,6 @@ def get_promotions_by_category(category_id):
 
 
 # ==============================
-# API TẠO KHUYẾN MÃI MỚI (ADMIN)
 # BODY: code, discount_value, start_date, end_date, categories
 # ==============================
 @promotion_bp.route("/", methods=["POST"])
@@ -148,7 +143,6 @@ def create_promotion():
 
 
 # ==============================
-# API CẬP NHẬT KHUYẾN MÃI (ADMIN)
 # BODY: discount_value, start_date, end_date, status, categories
 @require_auth
 @require_admin
@@ -186,7 +180,6 @@ def update_promotion(promotion_id):
 
 
 # ==============================
-# API XÓA KHUYẾN MÃI (ADMIN)
 # URL: /api/promotions/<id>
 @require_auth
 @require_admin
@@ -209,7 +202,6 @@ def delete_promotion(promotion_id):
 
 
 # ==============================
-# API KIỂM TRA KHUYẾN MÃI HỢP LỆ
 # URL: /api/promotions/validate/<code>
 # ==============================
 @promotion_bp.route("/validate/<code>", methods=["GET"])

@@ -48,7 +48,6 @@ class CartModel:
         cursor = conn.cursor()
 
         try:
-            # Lấy giá sản phẩm
             cursor.execute("""
                 SELECT G9_Gia 
                 FROM G9_SanPham 
@@ -61,7 +60,6 @@ class CartModel:
 
             price = product[0]
 
-            # Kiểm tra user đã có giỏ hàng chưa
             cursor.execute("""
                 SELECT G9_MaGioHang 
                 FROM G9_GioHang 
@@ -80,7 +78,6 @@ class CartModel:
             else:
                 cart_id = cart[0]
 
-            # Kiểm tra sản phẩm đã có trong giỏ chưa
             cursor.execute("""
                 SELECT G9_MaChiTiet, G9_SoLuong
                 FROM G9_ChiTietGioHang

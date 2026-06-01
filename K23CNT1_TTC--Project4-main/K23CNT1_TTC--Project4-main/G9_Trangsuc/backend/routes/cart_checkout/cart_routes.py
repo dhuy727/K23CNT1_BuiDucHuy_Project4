@@ -24,7 +24,6 @@ cart_bp = Blueprint("cart", __name__)
 @require_auth
 def get_cart(user_id):
     try:
-        # Kiểm tra user chỉ có thể view giỏ hàng của họ
         if not is_current_user(user_id):
             return jsonify({
                 "success": False,

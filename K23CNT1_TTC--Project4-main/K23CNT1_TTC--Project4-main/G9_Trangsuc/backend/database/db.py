@@ -16,6 +16,7 @@ load_dotenv()
 # ==============================
 # HÀM KẾT NỐI DATABASE
 # ==============================
+# Lấy kết nối SQL Server
 def get_connection():
     conn = pyodbc.connect(
         r"DRIVER={ODBC Driver 17 for SQL Server};"
@@ -31,6 +32,7 @@ def get_connection():
 # ==============================
 # CHUYỂN NHIỀU DÒNG -> LIST DICT
 # ==============================
+# Chuyển nhiều dòng kết quả sang list dict
 def rows_to_dict(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
@@ -39,6 +41,7 @@ def rows_to_dict(cursor):
 # ==============================
 # CHUYỂN 1 DÒNG -> DICT
 # ==============================
+# Chuyển một dòng kết quả sang dict
 def row_to_dict(cursor):
     columns = [col[0] for col in cursor.description]
     row = cursor.fetchone()

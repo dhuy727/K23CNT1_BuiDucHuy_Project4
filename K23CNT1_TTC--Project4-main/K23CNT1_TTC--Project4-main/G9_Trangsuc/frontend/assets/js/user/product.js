@@ -901,7 +901,6 @@ function logoutUser() {
 }
 
 async function init() {
-    // Khởi tạo el sau khi DOM sẵn sàng
     el = {
         productList: document.getElementById("productList"),
         productPagination: document.getElementById("productPagination"),

@@ -71,7 +71,6 @@ class OrderModel:
         conn = get_connection()
         cursor = conn.cursor()
 
-        # Lấy thông tin đơn hàng
         cursor.execute("""
             SELECT 
                 G9_MaDonHang AS id,
@@ -87,7 +86,6 @@ class OrderModel:
 
         order = row_to_dict(cursor)
 
-        # Lấy danh sách sản phẩm trong đơn
         cursor.execute("""
             SELECT
                 ct.G9_MaChiTiet AS id,
@@ -115,7 +113,6 @@ class OrderModel:
         cursor = conn.cursor()
 
         try:
-            # Lấy giỏ hàng của user
             cursor.execute("""
                 SELECT G9_MaGioHang
                 FROM G9_GioHang
@@ -129,7 +126,6 @@ class OrderModel:
 
             cart_id = cart[0]
 
-            # Lấy chi tiết giỏ hàng
             cursor.execute("""
                 SELECT 
                     G9_MaSanPham,
@@ -148,7 +144,6 @@ class OrderModel:
             # Tính tổng tiền
             total = sum([item.ThanhTien for item in cart_items])
 
-            # Tạo đơn hàng
             # Nếu phương thức thanh toán là PAYPAL thì để trạng thái đơn là 'Chưa thanh toán'
             # để tránh tự động duyệt đơn trước khi PayPal xác nhận.
             order_status = 'Chờ xác nhận'
@@ -171,7 +166,6 @@ class OrderModel:
 
             order_id = cursor.fetchone()[0]
 
-            # Thêm chi tiết đơn hàng
             for item in cart_items:
                 cursor.execute("""
                     INSERT INTO G9_ChiTietDonHang
@@ -193,7 +187,6 @@ class OrderModel:
 
                 ProductModel.sync_status_with_stock(item.G9_MaSanPham, cursor=cursor)
 
-            # Tạo bản ghi thanh toán và đặt trạng thái thanh toán là 'Chưa thanh toán'
             payment_status = 'Chưa thanh toán'
             cursor.execute("""
                 INSERT INTO G9_ThanhToan
@@ -206,7 +199,6 @@ class OrderModel:
                 VALUES (?, ?, ?, ?)
             """, (order_id, payment_method, total, payment_status))
 
-            # Xóa chi tiết giỏ hàng sau khi đặt hàng
             cursor.execute("""
                 DELETE FROM G9_ChiTietGioHang
                 WHERE G9_MaGioHang = ?
@@ -339,7 +331,6 @@ class OrderModel:
         cursor = conn.cursor()
 
         try:
-            # Cập nhật trạng thái đơn hàng
             cursor.execute("""
                 UPDATE G9_DonHang
                 SET G9_TrangThai = ?

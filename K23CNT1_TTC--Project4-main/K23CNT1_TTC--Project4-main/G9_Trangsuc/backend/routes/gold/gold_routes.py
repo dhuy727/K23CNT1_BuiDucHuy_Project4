@@ -21,7 +21,6 @@ def get_gold_price():
 
 
 # ==============================
-# API LẤY CHI TIẾT GIÁ VÀNG
 # URL: /api/gold/<id>
 # ==============================
 @gold_bp.route("/<int:gold_id>", methods=["GET"])
@@ -47,7 +46,6 @@ def get_gold_price_detail(gold_id):
 
 
 # ==============================
-# API THÊM GIÁ VÀNG
 # ==============================
 @gold_bp.route("/", methods=["POST"])
 @require_auth
@@ -68,7 +66,6 @@ def create_gold_price():
 
 
 # ==============================
-# API CẬP NHẬT GIÁ VÀNG
 # ==============================
 @gold_bp.route("/<int:gold_id>", methods=["PUT"])
 @require_auth

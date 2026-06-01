@@ -18,7 +18,6 @@ product_bp = Blueprint("products", __name__)
 
 
 # ==============================
-# API LẤY DANH SÁCH SẢN PHẨM
 # ==============================
 @product_bp.route("/", methods=["GET"])
 def get_products():
@@ -49,7 +48,6 @@ def get_products():
 
 
 # ==============================
-# API LẤY CHI TIẾT SẢN PHẨM
 # ==============================
 @product_bp.route("/<int:id>", methods=["GET"])
 def get_product_detail(id):
@@ -75,7 +73,6 @@ def get_product_detail(id):
 
 
 # ==============================
-# API THÊM SẢN PHẨM
 # ==============================
 @product_bp.route("/", methods=["POST"])
 @require_auth
@@ -102,7 +99,6 @@ def create_product():
 
 
 # ==============================
-# API CẬP NHẬT SẢN PHẨM
 # ==============================
 @product_bp.route("/<int:id>", methods=["PUT"])
 @require_auth
@@ -130,7 +126,6 @@ def update_product(id):
 
 
 # ==============================
-# API CẬP NHẬT TRẠNG THÁI SẢN PHẨM
 # BODY: status
 # ==============================
 @product_bp.route("/status/<int:id>", methods=["PUT"])
@@ -170,7 +165,6 @@ def update_product_status(id):
 
 
 # ==============================
-# API XÓA SẢN PHẨM
 # ==============================
 @product_bp.route("/<int:id>", methods=["DELETE"])
 @require_auth

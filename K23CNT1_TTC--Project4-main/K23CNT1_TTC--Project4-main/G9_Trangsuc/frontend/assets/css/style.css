@@ -129,6 +129,10 @@ img { max-width: 100%; }
 .premium-card .card-img-top, .card-img-top, .product-thumb { width: 100%; object-fit: cover; aspect-ratio: 4 / 3; background: #fff; }
 .product-card { position: relative; height: 100%; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease; }
 .product-card:hover { transform: translateY(-6px); }
+.product-card--clickable { cursor: pointer; }
+.product-card--clickable:focus-visible { outline: 2px solid rgba(199, 154, 43, 0.55); outline-offset: 3px; }
+.product-card--clickable .product-card-actions { cursor: default; }
+.product-card--clickable .product-card-actions .btn { cursor: pointer; }
 .product-card .card-body { padding: 1.1rem; }
 .product-name { font-size: 1.05rem; font-weight: 800; line-height: 1.35; margin-bottom: .45rem; }
 .product-price { font-size: 1.15rem; font-weight: 900; color: #b57d0e; }
@@ -175,7 +179,6 @@ img { max-width: 100%; }
 .auth-card { width: min(100%, 520px); padding: 2rem; }
 .auth-title { font-size: clamp(1.9rem, 3vw, 2.7rem); font-weight: 900; margin-bottom: .45rem; }
 .auth-desc { color: var(--g9-muted); line-height: 1.7; margin-bottom: 1.5rem; }
-.chatbot-btn { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 1030; width: 58px; height: 58px; border-radius: 50%; box-shadow: 0 16px 35px rgba(199,154,43,0.3); }
 .toast-host { position: fixed; top: 1rem; right: 1rem; z-index: 2000; display: grid; gap: .75rem; }
 .g9-toast { min-width: 260px; max-width: 360px; padding: .9rem 1rem; border-radius: 16px; background: rgba(31,27,22,0.95); color: #fff; box-shadow: 0 20px 45px rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.08); animation: toast-in .25s ease-out; }
 .g9-toast.success { background: linear-gradient(135deg, #1d8f4f, #3ab86c); }

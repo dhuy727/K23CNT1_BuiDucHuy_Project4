@@ -17,7 +17,6 @@ order_bp = Blueprint("orders", __name__)
 
 
 # ==============================
-# API LẤY TẤT CẢ ĐƠN HÀNG
 # URL: /api/orders/
 # ==============================
 @order_bp.route("/", methods=["GET"])
@@ -39,7 +38,6 @@ def get_orders():
 
 
 # ==============================
-# API LẤY ĐƠN HÀNG THEO USER
 # URL: /api/orders/user/2
 # ==============================
 @order_bp.route("/user/<int:user_id>", methods=["GET"])
@@ -60,7 +58,6 @@ def get_orders_by_user(user_id):
 
 
 # ==============================
-# API XEM CHI TIẾT ĐƠN HÀNG
 # URL: /api/orders/detail/1
 # ==============================
 @order_bp.route("/detail/<int:order_id>", methods=["GET"])
@@ -80,7 +77,6 @@ def get_order_detail(order_id):
 
 
 # ==============================
-# API TẠO ĐƠN HÀNG TỪ GIỎ HÀNG
 # BODY: user_id, receiver_name, phone, address, payment_method
 # ==============================
 @order_bp.route("/checkout", methods=["POST"])
@@ -131,7 +127,6 @@ def checkout():
 
 
 # ==============================
-# API CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG
 # BODY: status
 # ==============================
 @order_bp.route("/status/<int:order_id>", methods=["PUT"])

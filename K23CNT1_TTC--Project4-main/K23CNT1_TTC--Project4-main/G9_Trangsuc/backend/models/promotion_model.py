@@ -10,7 +10,6 @@ from database.db import get_connection, rows_to_dict, row_to_dict
 
 class PromotionModel:
     # ==============================
-    # LẤY TẤT CẢ KHUYẾN MÃI
     # ==============================
     @staticmethod
     def get_all_promotions():
@@ -36,14 +35,12 @@ class PromotionModel:
         return promotions
 
     # ==============================
-    # LẤY KHUYẾN MÃI THEO ID
     # ==============================
     @staticmethod
     def get_promotion_by_id(promotion_id):
         conn = get_connection()
         cursor = conn.cursor()
 
-        # Lấy thông tin khuyến mãi
         cursor.execute("""
             SELECT 
                 G9_MaKhuyenMai AS id,
@@ -63,7 +60,6 @@ class PromotionModel:
             conn.close()
             return None
 
-        # Lấy danh sách danh mục áp dụng
         cursor.execute("""
             SELECT 
                 dm.G9_MaDanhMuc AS id,
@@ -85,7 +81,6 @@ class PromotionModel:
         }
 
     # ==============================
-    # LẤY KHUYẾN MÃI THEO CODE
     # ==============================
     @staticmethod
     def get_promotion_by_code(code):
@@ -112,7 +107,6 @@ class PromotionModel:
         return promotion
 
     # ==============================
-    # TẠO KHUYẾN MÃI MỚI
     # ==============================
     @staticmethod
     def create_promotion(code, discount_value, start_date, end_date, categories=None):
@@ -120,7 +114,6 @@ class PromotionModel:
         cursor = conn.cursor()
 
         try:
-            # Tạo khuyến mãi
             cursor.execute("""
                 INSERT INTO G9_KhuyenMai
                 (
@@ -136,7 +129,6 @@ class PromotionModel:
 
             promotion_id = cursor.fetchone()[0]
 
-            # Thêm danh mục áp dụng nếu có
             if categories:
                 for category_id in categories:
                     cursor.execute("""
@@ -158,7 +150,6 @@ class PromotionModel:
             raise e
 
     # ==============================
-    # CẬP NHẬT KHUYẾN MÃI
     # ==============================
     @staticmethod
     def update_promotion(promotion_id, discount_value=None, start_date=None, end_date=None, status=None, categories=None):
@@ -166,7 +157,6 @@ class PromotionModel:
         cursor = conn.cursor()
 
         try:
-            # Cập nhật thông tin khuyến mãi
             update_fields = []
             params = []
 
@@ -191,12 +181,9 @@ class PromotionModel:
                 params.append(promotion_id)
                 cursor.execute(query, params)
 
-            # Cập nhật danh mục nếu có
             if categories is not None:
-                # Xóa danh mục cũ
                 cursor.execute("DELETE FROM G9_DanhMuc_KhuyenMai WHERE G9_MaKhuyenMai = ?", (promotion_id,))
 
-                # Thêm danh mục mới
                 for category_id in categories:
                     cursor.execute("""
                         INSERT INTO G9_DanhMuc_KhuyenMai
@@ -215,7 +202,6 @@ class PromotionModel:
             raise e
 
     # ==============================
-    # XÓA KHUYẾN MÃI
     # ==============================
     @staticmethod
     def delete_promotion(promotion_id):
@@ -223,7 +209,6 @@ class PromotionModel:
         cursor = conn.cursor()
 
         try:
-            # Xóa sẽ tự động xóa danh mục liên kết vì có ON DELETE CASCADE
             cursor.execute("""
                 DELETE FROM G9_KhuyenMai
                 WHERE G9_MaKhuyenMai = ?
@@ -240,7 +225,6 @@ class PromotionModel:
             raise e
 
     # ==============================
-    # LẤY KHUYẾN MÃI THEO DANH MỤC
     # ==============================
     @staticmethod
     def get_promotions_by_category(category_id):
@@ -271,7 +255,6 @@ class PromotionModel:
         return promotions
 
     # ==============================
-    # KIỂM TRA KHUYẾN MÃI CÓN HIỆU LỰC
     # ==============================
     @staticmethod
     def is_promotion_valid(code):

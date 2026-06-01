@@ -13,10 +13,12 @@ class ValidationError(ValueError):
     pass
 
 
+# Kiểm tra giá trị rỗng hoặc chuỗi trắng
 def _is_empty(value):
     return value is None or (isinstance(value, str) and len(value.strip()) == 0)
 
 
+# Kiểm tra các trường bắt buộc trong payload
 def validate_required_fields(data, required_fields):
     missing = []
     for field in required_fields:
@@ -29,6 +31,7 @@ def validate_required_fields(data, required_fields):
     return True
 
 
+# Validate trường chuỗi (độ dài, bắt buộc)
 def validate_string_field(name, value, min_length=1, max_length=None, required=True):
     if _is_empty(value):
         if required:
@@ -49,6 +52,7 @@ def validate_string_field(name, value, min_length=1, max_length=None, required=T
     return True
 
 
+# Validate định dạng email
 def validate_email_field(name, value, required=True):
     if _is_empty(value):
         if required:
@@ -69,6 +73,7 @@ def validate_email_field(name, value, required=True):
     return True
 
 
+# Chuyển và validate số nguyên
 def to_int(value, name, min_value=None, max_value=None, required=True):
     if value is None or value == "":
         if required:
@@ -89,6 +94,7 @@ def to_int(value, name, min_value=None, max_value=None, required=True):
     return result
 
 
+# Chuyển và validate số thực
 def to_float(value, name, min_value=None, max_value=None, required=True):
     if value is None or value == "":
         if required:
@@ -109,6 +115,7 @@ def to_float(value, name, min_value=None, max_value=None, required=True):
     return result
 
 
+# Validate và parse ngày tháng
 def validate_date(value, name, date_format="%Y-%m-%d", required=True):
     if _is_empty(value):
         if required:
@@ -127,6 +134,7 @@ def validate_date(value, name, date_format="%Y-%m-%d", required=True):
     raise ValidationError(f"{name} phải là ngày hợp lệ")
 
 
+# Validate giá trị nằm trong danh sách cho phép
 def validate_enum_field(name, value, allowed_values, required=True):
     if _is_empty(value):
         if required:
@@ -139,6 +147,7 @@ def validate_enum_field(name, value, allowed_values, required=True):
     return True
 
 
+# Validate trường danh sách và kiểu phần tử
 def validate_list_field(name, value, element_type=int, required=False):
     if value is None:
         if required:
@@ -159,6 +168,7 @@ def validate_list_field(name, value, element_type=int, required=False):
 # DOMAIN VALIDATORS
 # ==============================
 
+# Validate payload sản phẩm
 def validate_product_payload(data, require_all=True):
     if require_all:
         validate_required_fields(data, ["name", "category_id", "price", "quantity"])
@@ -179,6 +189,7 @@ def validate_product_payload(data, require_all=True):
     return True
 
 
+# Validate payload danh mục
 def validate_category_payload(data, require_all=True):
     if require_all:
         validate_required_fields(data, ["name"])
@@ -191,6 +202,7 @@ def validate_category_payload(data, require_all=True):
     return True
 
 
+# Validate payload đánh giá sản phẩm
 def validate_review_payload(data):
     validate_required_fields(data, ["product_id", "rating", "content"])
     to_int(data.get("product_id"), "ID sản phẩm", min_value=1)
@@ -214,6 +226,7 @@ def validate_update_cart_payload(data):
     return True
 
 
+# Validate payload thanh toán/đặt hàng
 def validate_checkout_payload(data):
     validate_required_fields(data, ["user_id", "receiver_name", "phone", "address"])
     to_int(data.get("user_id"), "ID người dùng", min_value=1)
@@ -225,6 +238,7 @@ def validate_checkout_payload(data):
     return True
 
 
+# Validate payload khuyến mãi
 def validate_promotion_payload(data, require_all=True):
     if require_all:
         validate_required_fields(data, ["code", "discount_value", "start_date", "end_date"])
@@ -248,6 +262,7 @@ def validate_promotion_payload(data, require_all=True):
     return True
 
 
+# Validate payload tin tức
 def validate_news_payload(data, require_all=True):
     if require_all:
         validate_required_fields(data, ["title", "short_description", "content"])
@@ -260,6 +275,7 @@ def validate_news_payload(data, require_all=True):
     return True
 
 
+# Validate payload giá vàng
 def validate_gold_payload(data, require_all=True):
     if require_all:
         validate_required_fields(data, ["price"])
@@ -271,6 +287,7 @@ def validate_gold_payload(data, require_all=True):
     return True
 
 
+# Validate payload đăng nhập
 def validate_login_payload(data):
     validate_required_fields(data, ["username", "password"])
     validate_string_field("Tên đăng nhập", data.get("username"), min_length=3, max_length=100)
@@ -278,6 +295,7 @@ def validate_login_payload(data):
     return True
 
 
+# Validate payload đăng ký
 def validate_register_payload(data):
     validate_required_fields(data, ["fullname", "username", "email", "phone", "password"])
     validate_string_field("Họ tên", data.get("fullname"), min_length=3, max_length=150)
@@ -288,6 +306,7 @@ def validate_register_payload(data):
     return True
 
 
+# Validate trường trạng thái
 def validate_status_field(status, allowed_values=None):
     if _is_empty(status):
         raise ValidationError("Trạng thái không được để trống")

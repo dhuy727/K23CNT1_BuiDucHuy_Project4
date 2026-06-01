@@ -189,7 +189,6 @@
         const footerHost = document.getElementById('site-footer');
         if (footerHost) footerHost.innerHTML = renderFooter();
         
-        // Ensure authArea is rendered after navbar is inserted
         setTimeout(() => {
             renderAuthArea();
             renderCategories();

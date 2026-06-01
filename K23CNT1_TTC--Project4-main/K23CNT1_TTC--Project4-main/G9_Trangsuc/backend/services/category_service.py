@@ -29,7 +29,6 @@ class CategoryService:
             parent_id = cat.get("parent_id")
 
             if parent_id is None:
-                # Danh mục cấp 1
                 tree[cat.get("id")] = {
                     "category": cat,
                     "children": []

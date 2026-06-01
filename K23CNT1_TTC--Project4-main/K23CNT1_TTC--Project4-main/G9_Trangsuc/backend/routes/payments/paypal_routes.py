@@ -43,7 +43,6 @@ def _extract_order_reference(paypal_response):
 
 @paypal_bp.route('/create-order', methods=['POST'])
 def create_order():
-
     data = request.json or {}
     order_id = data.get('order_id')
     total = data.get('total')
@@ -77,7 +76,6 @@ def create_order():
 
 @paypal_bp.route('/capture', methods=['POST'])
 def capture_order():
-
     data = request.json
     paypal_order_id = data.get('paypal_order_id')
 

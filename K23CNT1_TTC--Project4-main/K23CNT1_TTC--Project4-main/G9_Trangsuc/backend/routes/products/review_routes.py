@@ -16,7 +16,6 @@ review_bp = Blueprint("reviews", __name__)
 
 
 # ==============================
-# API LẤY ĐÁNH GIÁ THEO SẢN PHẨM
 # URL: /api/reviews/product/<product_id>
 # ==============================
 @review_bp.route("/product/<int:product_id>", methods=["GET"])
@@ -37,7 +36,6 @@ def get_reviews_by_product(product_id):
 
 
 # ==============================
-# API THÊM ĐÁNH GIÁ
 # BODY: product_id, rating, content
 # User ID is taken from the authenticated JWT token
 # ==============================

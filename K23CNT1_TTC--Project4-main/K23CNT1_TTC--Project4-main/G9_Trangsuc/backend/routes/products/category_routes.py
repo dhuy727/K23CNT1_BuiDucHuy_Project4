@@ -17,7 +17,6 @@ category_bp = Blueprint("categories", __name__)
 
 
 # ==============================
-# API LẤY TẤT CẢ DANH MỤC
 # URL: /api/categories/
 # ==============================
 @category_bp.route("/", methods=["GET"])
@@ -37,7 +36,6 @@ def get_categories():
 
 
 # ==============================
-# API LẤY CHI TIẾT DANH MỤC
 # URL: /api/categories/<id>
 # ==============================
 @category_bp.route("/<int:category_id>", methods=["GET"])
@@ -63,7 +61,6 @@ def get_category(category_id):
 
 
 # ==============================
-# API THÊM DANH MỤC MỚI
 # BODY: name, description, parent_id, status
 # ==============================
 @category_bp.route("/", methods=["POST"])
@@ -99,7 +96,6 @@ def create_category():
 
 
 # ==============================
-# API CẬP NHẬT DANH MỤC
 # BODY: name, description, parent_id, status
 @require_auth
 @require_admin
@@ -137,7 +133,6 @@ def update_category(category_id):
 
 
 # ==============================
-# API XÓA DANH MỤC
 # URL: /api/categories/<id>
 @require_auth
 @require_admin
