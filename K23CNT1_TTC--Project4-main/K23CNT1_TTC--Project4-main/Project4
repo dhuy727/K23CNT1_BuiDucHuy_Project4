@@ -1,7 +1,0 @@
-echo "# K23CNT1_TTC--Project4" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/dhuy727/K23CNT1_BuiDucHuy_Project4.git
-git push -u origin main

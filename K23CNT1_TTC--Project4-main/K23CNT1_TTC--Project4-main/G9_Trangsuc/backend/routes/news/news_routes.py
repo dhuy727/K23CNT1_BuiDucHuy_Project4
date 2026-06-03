@@ -4,6 +4,7 @@ from middleware import require_auth, require_admin
 
 news_bp = Blueprint("news", __name__)
 
+# API lấy danh sách tin tức
 @news_bp.route("/", methods=["GET"])
 def get_news():
     try:
@@ -21,6 +22,7 @@ def get_news():
 
 
 # ==============================
+# API LẤY CHI TIẾT TIN TỨC
 # URL: /api/news/<id>
 # ==============================
 @news_bp.route("/<int:news_id>", methods=["GET"])
@@ -46,7 +48,9 @@ def get_news_detail(news_id):
 
 
 # ==============================
+# API THÊM TIN TỨC
 # ==============================
+# API thêm tin tức
 @news_bp.route("/", methods=["POST"])
 @require_auth
 @require_admin
@@ -66,7 +70,9 @@ def create_news():
 
 
 # ==============================
+# API CẬP NHẬT TIN TỨC
 # ==============================
+# API cập nhật tin tức
 @news_bp.route("/<int:news_id>", methods=["PUT"])
 @require_auth
 @require_admin
@@ -86,7 +92,9 @@ def update_news(news_id):
 
 
 # ==============================
+# API XÓA TIN TỨC
 # ==============================
+# API xóa tin tức
 @news_bp.route("/<int:news_id>", methods=["DELETE"])
 @require_auth
 @require_admin

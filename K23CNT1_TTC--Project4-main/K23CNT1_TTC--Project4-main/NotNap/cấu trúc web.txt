@@ -8,7 +8,6 @@ Công nghệ sử dụng (đúng theo thư mục `G9_Trangsuc`):
 - Auth: JWT (PyJWT) + Google OAuth (Authlib)
 - Payment: PayPal REST (requests)
 - Frontend: HTML5, CSS3, JavaScript, Bootstrap 5
-- Dashboard: Chart.js
 - Quản lý cấu hình: python-dotenv (.env)
 - Quản lý source: Git / GitHub
 
@@ -65,10 +64,10 @@ G9_Trangsuc/
 │   │   ├── jwt_helper.py
 │   │   └── request_validator.py
 │   │
-│   ├── uploads/                  (lưu ảnh/file upload; được serve qua /uploads/* và /news/*)
+│   ├── uploads/                  
 │   │
 │   └── routes/
-│       ├── __init__.py           (tập trung import blueprints)
+│       ├── __init__.py           
 │       ├── auth/
 │       │   ├── __init__.py
 │       │   └── auth_routes.py
@@ -187,7 +186,7 @@ G9_Trangsuc/
 
 
 =========================================================
-API MODULES (đúng theo `backend/app.py` + `routes/__init__.py`)
+API MODULES 
 =========================================================
 
 Các blueprint và url_prefix:
@@ -218,7 +217,7 @@ CHỨC NĂNG WEBSITE
 KHÁCH HÀNG:
 - Đăng ký / Đăng nhập (JWT)
 - Đăng nhập Google (OAuth) qua `google-callback.html`
-- Quản lý hồ sơ: xem/cập nhật thông tin cơ bản
+- Quản lý hồ sơ: xem/cập nhật thông tin cơ bản, đổi mật khẩu
 - Xem danh sách sản phẩm, lọc/tìm kiếm, xem chi tiết
 - Giỏ hàng: thêm/sửa/xóa sản phẩm
 - Đặt hàng: checkout, tạo đơn hàng

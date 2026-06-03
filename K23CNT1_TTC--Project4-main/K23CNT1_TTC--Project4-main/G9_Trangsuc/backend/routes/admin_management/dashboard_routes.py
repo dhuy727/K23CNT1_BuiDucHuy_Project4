@@ -12,6 +12,7 @@ dashboard_bp = Blueprint("dashboard", __name__)
 
 
 # ==============================
+# API THỐNG KÊ DASHBOARD
 # URL: /api/dashboard/
 # ==============================
 @dashboard_bp.route("/", methods=["GET"])

@@ -167,9 +167,13 @@ function buildCategoryMaps(categoryList) {
     categories.forEach((category) => {
         if (category && category.id != null) {
             const id = String(category.id);
-            const name = (category.name || "").trim().toLowerCase();
-            if (name) {
-                categoryNameToIdMap.set(name, id);
+            const rawName = (category.name || "").trim().toLowerCase();
+            const normalizedName = normalizeCategoryName(rawName);
+            if (rawName) {
+                categoryNameToIdMap.set(rawName, id);
+            }
+            if (normalizedName && normalizedName !== rawName) {
+                categoryNameToIdMap.set(normalizedName, id);
             }
             const parentId = category.parent_id != null ? String(category.parent_id) : null;
             if (!childrenMap.has(parentId)) {
@@ -610,12 +614,14 @@ function renderProducts(options = {}) {
             <div class="col-sm-6 col-xl-4 fade-up" style="animation-delay: ${Math.min(index * 0.05, 0.35)}s">
                 <div class="card product-card h-100${stock.outOfStock ? " product-card--out-of-stock" : ""}">
                     <div class="position-relative overflow-hidden">
-                        <img
-                            src="${escapeHtml(getImageUrl(p.image))}"
-                            class="card-img-top${stock.outOfStock ? " product-img--out-of-stock" : ""}"
-                            alt="${escapeHtml(p.name)}"
-                            loading="lazy"
-                        >
+                        <a href="product-detail.html?id=${encodeURIComponent(p.id)}" class="product-image-link d-block">
+                            <img
+                                src="${escapeHtml(getImageUrl(p.image))}"
+                                class="card-img-top${stock.outOfStock ? " product-img--out-of-stock" : ""}"
+                                alt="${escapeHtml(p.name)}"
+                                loading="lazy"
+                            >
+                        </a>
                         <span class="badge badge-soft position-absolute top-0 start-0 m-3">
                             ${escapeHtml(p.category_name || "Trang sức")}
                         </span>
@@ -657,21 +663,16 @@ function renderProducts(options = {}) {
                         </div>
 
                         <div class="d-flex gap-2 mt-auto">
-                            <a href="product-detail.html?id=${encodeURIComponent(p.id)}"
-                               class="btn btn-outline-gold flex-grow-1">
-                                Xem chi tiết
-                            </a>
-
                             ${stock.outOfStock ? `
                                 <button type="button"
-                                        class="btn btn-secondary"
+                                        class="btn btn-secondary w-100"
                                         disabled
                                         title="${escapeHtml(stock.label)}">
                                     ${escapeHtml(stock.label)}
                                 </button>
                             ` : `
                                 <button type="button"
-                                        class="btn btn-gold"
+                                        class="btn btn-gold w-100"
                                         onclick="addToCart(${Number(p.id)})">
                                     + Giỏ
                                 </button>
@@ -731,7 +732,7 @@ function bindCategoryButtons() {
             e.preventDefault();
             activeCategory = btn.dataset.category || "all";
             selectedCategoryId = activeCategory !== "all"
-                ? categoryNameToIdMap.get(String(activeCategory).trim().toLowerCase()) || null
+                ? categoryNameToIdMap.get(normalizeCategoryName(activeCategory)) || null
                 : null;
             updateActiveCategoryUI();
             resetToFirstPage();
